@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EFPD Dashboard — ລາຍງານງົບປະມານ</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.2.0/highcharts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.2.0/modules/accessibility.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700&family=Noto+Serif+Lao:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f2ee;
+    --surface: #ffffff;
+    --border: #e0ddd6;
+    --text-primary: #1a1916;
+    --text-secondary: #5c5a55;
+    --text-muted: #9e9b94;
+    --accent: #1e4a7a;
+    --accent2: #c4622d;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --green: #2d6a4f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans Lao', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--accent);
+    color: #fff;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid var(--accent2);
+  }
+  .site-header h1 { font-size: 17px; font-weight: 600; letter-spacing: 0.3px; }
+  .header-right { display:flex; align-items:center; gap:14px; }
+  .site-header .sub { font-size: 12px; opacity: 0.7; font-weight: 300; }
+  .refresh-btn {
+    font-family: 'Noto Sans Lao', sans-serif;
+    font-size: 12px;
+    padding: 5px 12px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 5px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.15s;
+  }
+  .refresh-btn:hover { background: rgba(255,255,255,0.2); }
+  .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── LOADING / ERROR ── */
+  .loading-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    gap: 16px;
+  }
+  .loading-screen.hidden { display: none; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .loading-text { font-size: 14px; color: var(--text-secondary); }
+  .loading-sub  { font-size: 12px; color: var(--text-muted); }
+
+  .error-banner {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 24px;
+    color: #b91c1c;
+    font-size: 14px;
+    display: none;
+  }
+  .error-banner.visible { display: block; }
+  .error-banner strong { display: block; margin-bottom: 6px; font-size: 15px; }
+  .error-banner code { font-size: 12px; background: #fee2e2; padding: 2px 6px; border-radius: 3px; }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .status-dot { width:7px; height:7px; border-radius:50%; background:#ccc; flex-shrink:0; }
+  .status-dot.ok  { background:#22c55e; }
+  .status-dot.err { background:#ef4444; }
+  .status-dot.loading { background:#f59e0b; animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .status-bar .last-updated { margin-left:auto; }
+
+  /* ── CONFIG BANNER ── */
+  .config-banner {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 24px 24px 0;
+    font-size: 13px;
+    color: #92400e;
+  }
+  .config-banner strong { color: #78350f; }
+  .config-banner code {
+    background: #fef3c7;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    user-select: all;
+  }
+  .config-banner.hidden { display: none; }
+
+  /* ── MAIN LAYOUT ── */
+  .main { max-width: 1280px; margin: 0 auto; padding: 32px 24px; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    border-left: 3px solid var(--accent2);
+    padding-left: 10px;
+  }
+
+  .controls-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .controls-bar label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+  .year-select {
+    font-family: 'Noto Sans Lao', sans-serif;
+    font-size: 14px;
+    padding: 6px 32px 6px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-primary);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235c5a55' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  .year-select:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+
+  .card {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+  }
+  .card-title { font-family: 'Noto Serif Lao', serif; font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .card-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .tab-bar { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+  .tab-btn {
+    font-family: 'Noto Sans Lao', sans-serif;
+    font-size: 13px;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .tab-btn:hover:not(.active) { color: var(--text-primary); }
+
+  .data-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="spinner"></div>
+  <div class="loading-text">ກຳລັງໂຫລດຂໍ້ມູນຈາກ Google Sheets…</div>
+  <div class="loading-sub" id="loadingDetail">ກຳລັງເຊື່ອມຕໍ່…</div>
+</div>
+
+<header class="site-header">
+  <h1>ລະບົບຂໍ້ມູນການເງິນ-ງົບປະມານ (EFPD Dashboard)</h1>
+  <div class="header-right">
+    <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" title="ໂຫລດຂໍ້ມູນໃໝ່">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/>
+      </svg>
+      ໂຫລດໃໝ່
+    </button>
+    <span class="sub">ກະຊວງການເງິນ · ສປປ ລາວ</span>
+  </div>
+</header>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-dot" id="statusDot"></div>
+  <span id="statusText">ກຳລັງເຊື່ອມຕໍ່…</span>
+  <span class="last-updated" id="lastUpdated"></span>
+</div>
+
+<!-- CONFIG BANNER (shown if SHEET_ID not set) -->
+<div class="config-banner hidden" id="configBanner">
+  <strong>⚙️ ຕັ້ງຄ່າ Google Sheet ID</strong><br>
+  ເປີດໄຟລ໌ HTML ນີ້ ແລະ ໃສ່ Sheet ID ຂອງທ່ານຢູ່ທ້າຍ script:<br><br>
+  <code>const SHEET_ID = 'ໃສ່ ID ຂອງ Google Sheet ທ່ານ';</code><br><br>
+  ຊອກຫາ ID ຢູ່ URL ຂອງ Sheet: <code>https://docs.google.com/spreadsheets/d/<strong>THIS_PART</strong>/edit</code>
+</div>
+
+<!-- ERROR BANNER -->
+<div class="error-banner" id="errorBanner">
+  <strong id="errorTitle">ໂຫລດຂໍ້ມູນບໍ່ສຳເລັດ</strong>
+  <span id="errorDetail"></span>
+</div>
+
+<main class="main" id="mainContent" style="display:none;">
+
+  <!-- SECTION 1: Pie Charts -->
+  <p class="section-label">ໂຄງສ້າງລາຍຮັບ ແລະ ລາຍຈ່າຍ</p>
+  <div class="controls-bar">
+    <label>ເລືອກປີ:</label>
+    <select class="year-select" id="pieYear" onchange="updatePieCharts()"></select>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" id="revPieTitle">ໂຄງປະກອບລາຍຮັບງົບປະມານ</div>
+      <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ</div>
+      <div id="revPieChart" style="min-height:380px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-title" id="expPieTitle">ໂຄງປະກອບລາຍຈ່າຍງົບປະມານ</div>
+      <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ</div>
+      <div id="expPieChart" style="min-height:380px;"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Summary % GDP -->
+  <p class="section-label" style="margin-top:8px;">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ</p>
+  <div class="controls-bar">
+    <label>ເລືອກປີ:</label>
+    <select class="year-select" id="summaryYear" onchange="updateSummaryChart()"></select>
+  </div>
+  <div class="card">
+    <div class="card-title" id="summaryTitle">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ</div>
+    <div class="card-subtitle" id="summarySubtitle">ໜ່ວຍ: % ຂອງ GDP</div>
+    <div id="summaryChart" style="min-height:440px;"></div>
+  </div>
+
+  <!-- SECTION 3: Detail LAK -->
+  <p class="section-label">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ</p>
+  <div class="card">
+    <div class="card-title" id="detailAbsTitle">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ</div>
+    <div class="card-subtitle" id="detailAbsSubtitle">ໜ່ວຍ: ຕື້ກີບ</div>
+    <div id="detailAbsChart" style="min-height:460px;"></div>
+  </div>
+
+  <!-- SECTION 4: Detail % GDP -->
+  <p class="section-label">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ</p>
+  <div class="controls-bar">
+    <label>ເລືອກປີ:</label>
+    <select class="year-select" id="detailPctYear" onchange="updateDetailPctChart()"></select>
+  </div>
+  <div class="card">
+    <div class="card-title" id="detailPctTitle">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ</div>
+    <div class="card-subtitle" id="detailPctSubtitle">ໜ່ວຍ: % ຂອງ GDP</div>
+    <div id="detailPctChart" style="min-height:460px;"></div>
+  </div>
+
+  <!-- SECTION 5: YTD vs Plan -->
+  <p class="section-label">ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ</p>
+  <div class="controls-bar">
+    <label>ເລືອກປີ:</label>
+    <select class="year-select" id="ytdYear" onchange="updateYTDChart()"></select>
+  </div>
+  <div class="card">
+    <div class="card-title" id="ytdTitle">ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ</div>
+    <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ · ສາຍສີແດງ = % ທີ່ປະຕິບັດໄດ້ (ແກນຂວາ)</div>
+    <div id="ytdChart" style="min-height:420px;"></div>
+  </div>
+
+  <!-- SECTION 6: Stability -->
+  <p class="section-label">ພະເເນກ ສະຖຽນລະພາບເສດຖະກິດ</p>
+  <div class="card">
+    <div class="card-title">ອັດຕາເງິນເຟີ້</div>
+    <div class="card-subtitle">ໜ່ວຍ: %, yoy</div>
+    <div id="inflationChart" style="min-height:520px;"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ດຸນຊຳລະສະພາບຕ່າງປະເທດ (BOP)</div>
+    <div class="card-subtitle">ໜ່ວຍ: ລ້ານ ໂດລາ</div>
+    <div id="bopChart" style="min-height:460px;"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ດຸນບັນຊີຊຳລະປົກກະຕິ</div>
+    <div class="card-subtitle">ໜ່ວຍ: ລ້ານ ໂດລາ</div>
+    <div id="currentAccountChart" style="min-height:460px;"></div>
+  </div>
+
+  <!-- SECTION 7: Development -->
+  <p class="section-label">ພະແນກ ພັດທະນາ</p>
+  <div class="card">
+    <div class="card-title">ຕົວຊີ້ວັດການຫຼຸດພົ້ນອອກຈາກສະຖານະພາບແບບດ້ອຍພັດທະນາ ຂອງ ສປປ ລາວ</div>
+    <div class="card-subtitle">HAI / EVI / GNI</div>
+    <div id="ldcChart" style="min-height:500px;"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ຜົນຜະລິດເຂົ້າ (ທົ່ວປະເທດ)</div>
+    <div class="card-subtitle">ໜ່ວຍ: ໂຕນ</div>
+    <div id="riceChart" style="min-height:460px;"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ອັດຕາການປະລະການຮຽນ ແຕ່ລະລະດັບການຮຽນ (ທົ່ວປະເທດ)</div>
+    <div class="card-subtitle">ໜ່ວຍ: %</div>
+    <div id="dropoutChart" style="min-height:460px;"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ສະຖິຕິການຂາດໂພສະນາການຂອງເດັກອາຍຸຕໍ່າກວ່າ 5 ປີ</div>
+    <div class="card-subtitle">LSIS / Target</div>
+    <div id="malnutritionChart" style="min-height:460px;"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ການຈັດຫາອຸກອາຮັດວຽກງານພາຍໃນປະເທດ</div>
+    <div class="card-subtitle">ໜ່ວຍ: ເທື່ອຄົນ</div>
+    <div id="domesticJobsChart" style="min-height:460px;"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ການຈັດຫາອຸກອາຮັດວຽກງານໄປຕ່າງປະເທດ</div>
+    <div class="card-subtitle">ໜ່ວຍ: ເທື່ອຄົນ</div>
+    <div id="foreignJobsChart" style="min-height:460px;"></div>
+  </div>
+
+  <!-- SECTION 8: Economic Growth Contribution -->
+  <p class="section-label">ພະແນກ ຂໜ ເສດຖະກິດ</p>
+  <div class="card">
+    <div class="card-title">ການເຕີບໂຕຂອງເສດຖະກິດ ແລະ ການປະກອບສ່ວນການເຕີບໂຕຂອງຂະເເໜງການ</div>
+    <div class="card-subtitle">ໜ່ວຍ: ຈຸດສ່ວນຮ້ອຍ</div>
+    <div id="growthContributionChart" style="min-height:460px;"></div>
+  </div>
+
+  <p class="data-note" id="dataNote">ແຫຼ່ງຂໍ້ມູນ: ກະຊວງການເງິນ, ສປປ ລາວ · Google Sheets (Live)</p>
+</main>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+//  ⚙️  CONFIGURATION — SET YOUR GOOGLE SHEET ID HERE
+//      Find it in the Sheet URL:
+//      https://docs.google.com/spreadsheets/d/  ← THIS PART →  /edit
+// ══════════════════════════════════════════════════════════════════
+const SHEET_ID = '19rRGKK0oTEArdnnWPxrG7t99eIkP7O9r';
+
+// Sheet names (must match exactly as in your Google Sheet tabs)
+const SHEETS = {
+  yData:   'Y_Data (post in Web) ',   // annual revenue & expenditure data
+  ytdData: 'YTD Data',                // 9-month actual implementation
+  planData:'Plan Data',               // annual budget plan
+  chartData:'chart ພນ ຂໍ້ມູນ',      // helper sheet used by the Excel charts
+  stabilityData:'chart ພນ ສະຖຽນລະພາບ',
+  developmentData:'chart ພນ ພັດທະນາ',
+  economicData:'chart ພນ ຂໜ ເສດຖະກິດ',
+};
+
+// Auto-refresh interval in minutes (0 = disabled)
+const AUTO_REFRESH_MINUTES = 0;
+
+// ══════════════════════════════════════════════════════════════════
+//  COLOR PALETTES
+// ══════════════════════════════════════════════════════════════════
+const REV_COLORS  = ['#1a3a5c','#2e6da4','#5a9fd4','#93c4e8','#bdddf4','#c4622d','#d9845a','#e8a882','#7fb069','#4a8c6e','#a8c5b5'];
+const EXP_COLORS  = ['#c4622d','#d9845a','#8b4513','#e8a882','#f5c5a0','#fde4cc'];
+
+// ══════════════════════════════════════════════════════════════════
+//  RUNTIME STATE
+// ══════════════════════════════════════════════════════════════════
+let REVENUE_PIE   = {};
+let EXPENDITURE_PIE = {};
+let SUMMARY_PCT   = {};
+let DETAIL_ABS    = {};
+let DETAIL_PCT    = {};
+let SUMMARY_END_YEARS = [];
+let DETAIL_PCT_END_YEARS = [];
+let YTD_DATA      = {};
+let STABILITY_DATA = {
+  inflation: null,
+  bop: null,
+  currentAccount: null,
+};
+let DEVELOPMENT_DATA = {
+  ldc: null,
+  rice: null,
+  dropout: null,
+  malnutrition: null,
+  domesticJobs: null,
+  foreignJobs: null,
+};
+let ECONOMIC_DATA = {
+  growthContribution: null,
+};
+
+let revPie, expPie, summaryChart, detailAbsChart, detailPctChart, ytdChart;
+let inflationChart, bopChart, currentAccountChart;
+let ldcChart, riceChart, dropoutChart, malnutritionChart, domesticJobsChart, foreignJobsChart;
+let growthContributionChart;
+
+// ══════════════════════════════════════════════════════════════════
+//  GOOGLE SHEETS FETCH & PARSE
+// ══════════════════════════════════════════════════════════════════
+
+/**
+ * Fetch a Google Sheet tab via the gviz/tq JSON endpoint.
+ * The sheet must be published to the web (File → Share → Publish to web).
+ */
+async function fetchSheet(sheetName) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+  const res  = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status} fetching sheet "${sheetName}"`);
+  const text = await res.text();
+
+  // Google wraps the JSON in: google.visualization.Query.setResponse({...});
+  const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);?\s*$/);
+  if (!match) throw new Error(`Unexpected response format from sheet "${sheetName}"`);
+
+  const parsed = JSON.parse(match[1]);
+  if (parsed.status === 'error') {
+    const msg = parsed.errors?.[0]?.detailed_message || 'Unknown Sheets error';
+    throw new Error(msg);
+  }
+  return parsed.table; // { cols: [...], rows: [...] }
+}
+
+/**
+ * Safely read a cell value from a gviz row.
+ */
+function cellVal(row, colIdx) {
+  if (!row || !row.c) return null;
+  const cell = row.c[colIdx];
+  return (cell && cell.v !== undefined && cell.v !== null) ? cell.v : null;
+}
+
+function textVal(row, colIdx) {
+  const v = cellVal(row, colIdx);
+  return v === null || v === undefined ? '' : String(v).trim();
+}
+
+function numOrNull(row, colIdx) {
+  const v = cellVal(row, colIdx);
+  if (v === null || v === undefined || v === '') return null;
+  const n = typeof v === 'number' ? v : parseFloat(String(v).replace(/,/g, ''));
+  return Number.isFinite(n) ? n : null;
+}
+
+function normalizeYearCell(value) {
+  if (value === null || value === undefined) return null;
+  const rawLabel = typeof value === 'number' ? String(Math.round(value)) : String(value).trim();
+  const year = rawLabel.replace(/\s*\(9M\)\s*$/i, '').replace(/\.0$/, '').trim();
+  if (!/^\d{4}$/.test(year)) return null;
+  const numericYear = parseInt(year, 10);
+  if (numericYear < 2000 || numericYear > 2100) return null;
+  return {
+    year,
+    rawLabel,
+    isPartial: /\(9M\)/i.test(rawLabel),
+  };
+}
+
+function detectYearColumns(rows, startColIdx, minMatches = 4) {
+  for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
+    const row = rows[rowIdx];
+    if (!row || !row.c) continue;
+
+    const matches = [];
+    row.c.forEach((cell, colIdx) => {
+      if (colIdx < startColIdx) return;
+      const parsed = normalizeYearCell(cell?.v);
+      if (parsed) matches.push({...parsed, colIdx});
+    });
+
+    if (matches.length >= minMatches) {
+      return {rowIdx, yearCols: matches};
+    }
+  }
+
+  return {rowIdx: -1, yearCols: []};
+}
+
+function getRowYearCols(table, rowNumber, startColIdx = 1) {
+  const row = table.rows[rowNumber - 1];
+  const yearCols = [];
+  if (!row || !row.c) return yearCols;
+  row.c.forEach((cell, colIdx) => {
+    if (colIdx < startColIdx) return;
+    const parsed = normalizeYearCell(cell?.v);
+    if (parsed) yearCols.push({...parsed, colIdx});
+  });
+  return yearCols;
+}
+
+function parseChartHelper(table) {
+  const rows = table.rows || [];
+
+  function yearColsAt(rowIdx, startCol = 0, minYear = null) {
+    return getRowYearCols(table, rowIdx + 1, startCol)
+      .filter(y => !y.isPartial && (minYear === null || parseInt(y.year, 10) >= minYear));
+  }
+
+  function rowValues(rowIdx, yearCols) {
+    const row = rows[rowIdx];
+    return yearCols.map(({colIdx}) => {
+      const v = numOrNull(row, colIdx);
+      return v === null ? null : round1(v);
+    });
+  }
+
+  function pieBlock(headerRowIdx, startDataRowIdx, labels, palette) {
+    const years = yearColsAt(headerRowIdx, 0);
+    const out = {};
+    years.forEach(({year, colIdx}) => {
+      const items = labels.map((label, i) => {
+        const value = numOrNull(rows[startDataRowIdx + i], colIdx);
+        if (value === null) return null;
+        return {name: label, y: round1(value), color: palette[i % palette.length]};
+      }).filter(Boolean);
+      if (items.length) out[parseInt(year, 10)] = items;
+    });
+    return out;
+  }
+
+  const revPieLabels = [
+    'ອາກອນມູນຄ່າເພີ່ມ',
+    'ອາກອນຊົມໃຊ້',
+    'ອາກອນກໍາໄລ',
+    'ອາກອນລາຍໄດ້',
+    'ພາສີຂາເຂົ້າ-ຂາອອກ',
+    'ຄ່າຊັບພະຍາກອນທໍາມະຊາດ',
+    'ຄ່າພາກຫຼວງໄຟຟ້າ',
+    'ເງິນປັນຜົນກໍາໄລ',
+    'ຄ່າບິນຜ່ານ',
+    'ຄ່າເຊົ່າ-ຄ່າສຳປະທານ',
+    'ລາຍຮັບອື່ນ',
+  ];
+  const expPieLabels = [
+    'ເງິນເດືອນ ແລະ ເງິນອຸດໜູນ',
+    'ລາຍຈ່າຍບໍລິຫານ ແລະ ຊື້ໃໝ່',
+    'ລາຍຈ່າຍດອກເບ້ຍ',
+    'ລາຍຈ່າຍລົງທຶນພາຍໃນ',
+    'ລາຍຈ່າຍລົງທຶນຕ່າງປະເທດ',
+    'ລາຍຈ່າຍອື່ນ',
+  ];
+
+  const revPieOut = pieBlock(0, 1, revPieLabels, REV_COLORS);
+  const expPieOut = pieBlock(12, 13, expPieLabels, EXP_COLORS);
+
+  const summaryYears = yearColsAt(19, 2, 2015);
+  const summaryGdp = rowValues(25, summaryYears);
+  function pctFromAbs(rowIdx) {
+    return rowValues(rowIdx, summaryYears).map((value, i) => {
+      const gdp = summaryGdp[i];
+      return gdp ? round1(value / gdp * 100) : null;
+    });
+  }
+  const summaryPct = {
+    years: summaryYears.map(y => parseInt(y.year, 10)),
+    rev: pctFromAbs(20),
+    exp: pctFromAbs(21),
+    bal: pctFromAbs(22),
+    domBal: pctFromAbs(23),
+  };
+
+  const detailAbsYears = yearColsAt(19, 2, 2015);
+  const detailAbs = {
+    years: detailAbsYears.map(y => parseInt(y.year, 10)),
+    rev_dom: rowValues(29, detailAbsYears),
+    rev_grant: rowValues(30, detailAbsYears),
+    currExp: rowValues(31, detailAbsYears),
+    capex: rowValues(32, detailAbsYears),
+    bal: rowValues(33, detailAbsYears),
+    domBal: rowValues(34, detailAbsYears),
+  };
+
+  const detailPctYears = yearColsAt(37, 2, 2015);
+  const detailPct = {
+    years: detailPctYears.map(y => parseInt(y.year, 10)),
+    rev_dom: rowValues(38, detailPctYears),
+    rev_grant: rowValues(39, detailPctYears),
+    currExp: rowValues(40, detailPctYears),
+    capex: rowValues(41, detailPctYears),
+    bal: rowValues(42, detailPctYears),
+    domBal: rowValues(43, detailPctYears),
+  };
+
+  const ytdYears = yearColsAt(46, 2, 2018);
+  const ytdOut = {};
+  ytdYears.forEach(({year, colIdx}) => {
+    ytdOut[parseInt(year, 10)] = {
+      cats: [
+        'ລາຍຮັບທັງໝົດ',
+        'ລາຍຮັບພາຍໃນ',
+        'ລາຍຈ່າຍທັງໝົດ',
+        'ລາຍຈ່າຍປົກກະຕິ',
+        'ລາຍຈ່າຍລົງທຶນ',
+        'ດຸ່ນງົບປະມານ',
+        'ດຸ່ນພາຍໃນ',
+      ],
+      actual: [47, 48, 50, 51, 52, 53, 54].map(rowIdx => numOrNull(rows[rowIdx], colIdx)),
+      plan: [55, 56, 58, 59, 60, 61, 62].map(rowIdx => numOrNull(rows[rowIdx], colIdx)),
+      pct: [47, 48, 50, 51, 52, 53, 54].map((rowIdx, i) => {
+        const actual = numOrNull(rows[rowIdx], colIdx);
+        const plan = numOrNull(rows[[55, 56, 58, 59, 60, 61, 62][i]], colIdx);
+        if (actual === null || plan === null || plan === 0) return null;
+        return round1(actual / plan * 100);
+      }),
+    };
+  });
+
+  const summaryEndYears = [...summaryPct.years];
+  const detailPctEndYears = detailPct.years.filter(y => y >= 2021);
+
+  return {
+    revPieOut,
+    expPieOut,
+    summaryPct,
+    detailAbs,
+    detailPct,
+    summaryEndYears,
+    detailPctEndYears,
+    ytdOut,
+  };
+}
+
+function parseStabilityHelper(table) {
+  const rows = table.rows || [];
+
+  function cellFmt(rowIdx, colIdx) {
+    const row = rows[rowIdx];
+    if (!row || !row.c) return '';
+    const cell = row.c[colIdx];
+    return cell?.f ? String(cell.f).trim() : textVal(row, colIdx);
+  }
+
+  function seriesFromRow(rowIdx, colStart, colEnd) {
+    const out = [];
+    for (let colIdx = colStart; colIdx <= colEnd; colIdx++) {
+      const v = numOrNull(rows[rowIdx], colIdx);
+      out.push(v === null ? 0 : round1(v));
+    }
+    return out;
+  }
+
+  const inflationCats = [];
+  for (let colIdx = 2; colIdx <= 37; colIdx++) inflationCats.push(cellFmt(0, colIdx));
+
+  const inflation = {
+    categories: inflationCats,
+    total: seriesFromRow(1, 2, 37),
+    parts: [
+      {name:'ໝວດອາຫານ ແລະ ເຄື່ອງດື່ມບໍ່ແມ່ນທາດເຫຼົ້າ', data:seriesFromRow(2, 2, 37), color:'#f07f2f'},
+      {name:'ໝວດເຫຼົ້າ ແລະ ຢາສູບ', data:seriesFromRow(3, 2, 37), color:'#b3b3b3'},
+      {name:'ໝວດເຄື່ອງນຸ່ງຫົ່ມ ແລະ ເກີບ', data:seriesFromRow(4, 2, 37), color:'#ffc000'},
+      {name:'ໝວດທີ່ພັກອາໄສ, ນໍ້າປະປາ, ໄຟຟ້າ ແລະ ເຊື້ອເພີງ', data:seriesFromRow(5, 2, 37), color:'#6fa8dc'},
+      {name:'ໝວດເຄື່ອງໃຊ້ໃນເຮືອນ', data:seriesFromRow(6, 2, 37), color:'#70ad47'},
+      {name:'ໝວດການຮັກສາສຸຂະພາບ', data:seriesFromRow(7, 2, 37), color:'#2f5597'},
+      {name:'ໝວດຄົມມະນາຄົມ ແລະ ຂົນສົ່ງ', data:seriesFromRow(8, 2, 37), color:'#9e480e'},
+      {name:'ໝວດໄປສະນີ ແລະ ໂທລະຄົມມະນາຄົມ', data:seriesFromRow(9, 2, 37), color:'#636363'},
+      {name:'ໝວດການບັນເທິງ ແລະ ພັກຜ່ອນ', data:seriesFromRow(10, 2, 37), color:'#548235'},
+      {name:'ໝວດການສຶກສາ', data:seriesFromRow(11, 2, 37), color:'#5b9bd5'},
+      {name:'ໝວດຮ້ານອາຫານ ແລະ ໂຮງແຮມ', data:seriesFromRow(12, 2, 37), color:'#385723'},
+      {name:'ໝວດສິນຄ້າ ແລະ ບໍລິການອື່ນໆ', data:seriesFromRow(13, 2, 37), color:'#8faadc'},
+    ],
+  };
+
+  const bopCats = [];
+  for (let rowIdx = 22; rowIdx <= 24; rowIdx++) bopCats.push(textVal(rows[rowIdx], 1).replace('_', '-'));
+  const bop = {
+    categories: bopCats,
+    currentAccount: seriesFromRow(37, 6, 8),
+    capitalAccount: seriesFromRow(52, 6, 8),
+    financialAccount: seriesFromRow(56, 6, 8),
+    netErrors: seriesFromRow(90, 6, 8),
+    reserves: seriesFromRow(92, 6, 8),
+    overallBalance: seriesFromRow(91, 6, 8),
+  };
+
+  const currentCats = [];
+  for (let colIdx = 1; colIdx <= 7; colIdx++) currentCats.push(textVal(rows[108], colIdx));
+  const currentAccount = {
+    categories: currentCats,
+    currentAccount: seriesFromRow(109, 1, 7),
+    tradeBalance: seriesFromRow(110, 1, 7),
+    serviceBalance: seriesFromRow(113, 1, 7),
+    primaryIncomeNet: seriesFromRow(117, 1, 7),
+    secondaryIncomeNet: seriesFromRow(121, 1, 7),
+  };
+
+  return {inflation, bop, currentAccount};
+}
+
+function parseDevelopmentHelper(table) {
+  const rows = table.rows || [];
+
+  function series(rowIdx, startCol, endCol, scale = 1) {
+    const out = [];
+    for (let colIdx = startCol; colIdx <= endCol; colIdx++) {
+      const v = numOrNull(rows[rowIdx], colIdx);
+      out.push(v === null ? null : round1(v / scale));
+    }
+    return out;
+  }
+
+  const ldc = {
+    categories: [2000, 2003, 2006, 2009, 2012, 2015, 2018, 2021, 2024],
+    gni: [290, 320, 440, 630, 913, 1232, 1996, 2495, 2503],
+    hai: [39.5, 42.1, 48.2, 53.3, 58.5, 60.8, 72.8, 71.5, 74.8],
+    evi: [52, 50.8, 49.5, 45.2, 36.1, 36.2, 33.7, 27.2, 24.1],
+  };
+
+  const rice = {
+    categories: series(12, 2, 17, 1).map(v => String(Math.round(v))),
+    drySeason: series(13, 2, 17),
+    wetSeason: series(14, 2, 17),
+    upland: series(15, 2, 17),
+    total: series(16, 2, 17),
+  };
+
+  const dropout = {
+    categories: series(19, 2, 14, 1).map(v => String(Math.round(v))),
+    primary: series(20, 2, 14),
+    lowerSecondary: series(21, 2, 14),
+    upperSecondary: series(22, 2, 14),
+  };
+
+  const malnutrition = {
+    categories: ['LSIS I 2012', 'LSIS II 2017', 'LSIS III 2023', 'Target* 2025'],
+    stunting: [44, 33, 32.8, 27],
+    wasting: [6, 9, 10.7, null],
+    underweight: [27, 21, 24.3, 15],
+  };
+
+  const jobYears = ['2017', '2018', '2019', '2020', '2021', '2022', '2023'];
+  const domesticJobs = {
+    categories: jobYears,
+    technical: series(31, 3, 9),
+    industrial: series(32, 3, 9),
+    services: series(33, 3, 9),
+    total: series(34, 3, 9),
+  };
+  const foreignJobs = {
+    categories: jobYears,
+    technical: series(37, 3, 9),
+    industrial: series(38, 3, 9),
+    services: series(39, 3, 9),
+    total: series(40, 3, 9),
+  };
+
+  return {ldc, rice, dropout, malnutrition, domesticJobs, foreignJobs};
+}
+
+function parseEconomicHelper(table) {
+  const rows = table.rows || [];
+  const table6Idx = rows.findIndex(row =>
+    textVal(row, 1).includes('Table 6') || textVal(row, 2).includes('ຕາຕະລາງ 6')
+  );
+
+  if (table6Idx === -1) {
+    return {growthContribution: {categories: [], agriculture: [], industry: [], services: [], taxes: [], total: []}};
+  }
+
+  const headerRow = rows[table6Idx + 1];
+  const categories = [];
+
+  if (headerRow && headerRow.c) {
+    for (let colIdx = 3; colIdx < headerRow.c.length; colIdx++) {
+      const raw = cellVal(headerRow, colIdx);
+      if (raw === null || raw === undefined || raw === '') break;
+      categories.push(typeof raw === 'number' ? String(Math.round(raw)) : String(raw).trim());
+    }
+  }
+
+  function series(rowIdx, zeroFallback = false) {
+    return categories.map((_, offset) => {
+      const raw = cellVal(rows[rowIdx], offset + 3);
+      if (raw === null || raw === undefined || raw === '') return zeroFallback ? 0 : null;
+      if (typeof raw === 'string' && raw.trim() === '-') return zeroFallback ? 0 : null;
+      const value = typeof raw === 'number' ? raw : parseFloat(String(raw).replace(/,/g, ''));
+      return Number.isFinite(value) ? round1(value) : (zeroFallback ? 0 : null);
+    });
+  }
+
+  const growthContribution = {
+    categories,
+    agriculture: series(table6Idx + 2),
+    industry: series(table6Idx + 3),
+    services: series(table6Idx + 4),
+    taxes: series(table6Idx + 5),
+    total: series(table6Idx + 6, true),
+  };
+
+  return {growthContribution};
+}
+
+/**
+ * Parse Y_Data sheet into structured data objects.
+ *
+ * Sheet layout (1-indexed rows / 1-indexed cols as seen in spreadsheet):
+ *   Row 10 = year headers   (col C onward = years 2010, 2011, … 2024, "2025 (9M)")
+ *   Row 15 = Tax revenue total
+ *   Row 16 = Profit tax     Row 17 = Income tax   Row 22 = VAT
+ *   Row 23 = Excise         Row 24 = Import duty  Row 25 = Export duty
+ *   Row 28 = Natural resources  Row 30 = Hydro royalties
+ *   Row 31 = Nontax total   Row 32 = Leasing      Row 33 = Concessions
+ *   Row 36 = Dividends      Row 38 = Overflight
+ *   Row 51 = Wages          Row 67 = Materials    Row 69 = Interest
+ *   Row 81 = CapEx domestic Row 82 = CapEx foreign
+ *   Row 86 = Total exp      Row 90 = Total revenue (inc grants)
+ *   Row 92 = Tax revenue    Row 94 = Grants
+ *   Row 100= Total expenditure  Row 101= Current expenditure  Row 109= Overall balance
+ *   Row 142= GDP (nominal, millions LAK)
+ *
+ * gviz rows[] is 0-indexed so spreadsheet row N → rows[N-1]
+ */
+function parseYData(table) {
+  const rows = table.rows;
+
+  // The published sheet can shift rows, so detect the row that actually contains years.
+  const {yearCols} = detectYearColumns(rows, 2, 5);
+
+  // ── Helper: get value for a specific spreadsheet row and year label ──
+  function get(sheetRowNum, yearLabel) {
+    const rowIdx = sheetRowNum - 1; // convert to 0-based
+    if (rowIdx >= rows.length) return 0;
+    const ycol = yearCols.find(y => y.year === yearLabel);
+    if (!ycol) return 0;
+    return cellVal(rows[rowIdx], ycol.colIdx) || 0;
+  }
+
+  // ── Helper: get value for a row across all years → array ──
+  function getSeries(sheetRowNum) {
+    const rowIdx = sheetRowNum - 1;
+    return yearCols.map(y => {
+      if (rowIdx >= rows.length) return 0;
+      return cellVal(rows[rowIdx], y.colIdx) || 0;
+    });
+  }
+
+  // ── Annual pie years: all detected years that have both rev & exp data ──
+  // Excel only builds the pie charts from the recent annual block (2021+).
+  const pieYears = yearCols
+    .filter(y => parseInt(y.year) >= 2021 && !y.isPartial)
+    .map(y => y.year);
+
+  // ── Build REVENUE_PIE for each pie year ──
+  const revPieOut = {};
+  pieYears.forEach(yr => {
+    const vat      = get(22, yr);
+    const excise   = get(23, yr);
+    const profitTx = get(16, yr);
+    const incomeTx = get(17, yr);
+    const customs  = get(24, yr) + get(25, yr);
+    const natRes   = get(28, yr);
+    const hydro    = get(30, yr);
+    const divid    = get(36, yr);
+    const ovflt    = get(38, yr);
+    const leaseCon = get(32, yr) + get(33, yr);
+    const nontax   = get(31, yr);
+    const taxTot   = get(15, yr);
+    const named    = vat+excise+profitTx+incomeTx+customs+natRes+hydro+divid+ovflt+leaseCon;
+    const other    = Math.max(0, nontax + taxTot - named);
+
+    const items = [
+      {name:'ອາກອນມູນຄ່າເພີ່ມ',       v: vat},
+      {name:'ອາກອນຊົມໃຊ້',             v: excise},
+      {name:'ອາກອນກໍາໄລ',              v: profitTx},
+      {name:'ອາກອນລາຍໄດ້',             v: incomeTx},
+      {name:'ພາສີຂາເຂົ້າ-ຂາອອກ',       v: customs},
+      {name:'ຄ່າຊັບພະຍາກອນທໍາມະຊາດ',   v: natRes},
+      {name:'ຄ່າພາກຫຼວງໄຟຟ້າ',         v: hydro},
+      {name:'ເງິນປັນຜົນກໍາໄລ',         v: divid},
+      {name:'ຄ່າບິນຜ່ານ',              v: ovflt},
+      {name:'ຄ່າເຊົ່າ-ສໍາປະທານ',       v: leaseCon},
+      {name:'ລາຍຮັບອື່ນໆ',             v: other},
+    ];
+    revPieOut[yr] = items
+      .filter(item => item.v > 0)
+      .map((item, i) => ({name: item.name, y: round1(item.v / 1000), color: REV_COLORS[i % REV_COLORS.length]}));
+  });
+
+  // ── Build EXPENDITURE_PIE for each pie year ──
+  const expPieOut = {};
+  pieYears.forEach(yr => {
+    const wages    = get(51, yr);
+    const matl     = get(67, yr);
+    const interest = get(69, yr);
+    const capexLoc = get(81, yr);
+    const capexFor = get(82, yr);
+    const totalExp = get(86, yr);
+    const named    = wages + matl + interest + capexLoc + capexFor;
+    const other    = Math.max(0, totalExp - named);
+
+    const items = [
+      {name:'ເງິນເດືອນ ແລະ ເງິນອຸດໜູນ',      v: wages},
+      {name:'ລາຍຈ່າຍບໍລິຫານ ແລະ ຊື້ໃໝ່',     v: matl},
+      {name:'ລາຍຈ່າຍດອກເບ້ຍ',                v: interest},
+      {name:'ລາຍຈ່າຍລົງທຶນພາຍໃນ',            v: capexLoc},
+      {name:'ລາຍຈ່າຍລົງທຶນຕ່າງປະເທດ',        v: capexFor},
+      {name:'ລາຍຈ່າຍອື່ນໆ',                  v: other},
+    ];
+    expPieOut[yr] = items
+      .filter(item => item.v > 0)
+      .map((item, i) => ({name: item.name, y: round1(item.v / 1000), color: EXP_COLORS[i % EXP_COLORS.length]}));
+  });
+
+  // ── Build FISCAL (% of GDP) for fiscal chart years (annual, 2019+) ──
+  const fiscalYears = yearCols
+    .filter(y => parseInt(y.year) >= 2019 && !y.isPartial)
+    .map(y => y.year);
+
+  function pctGDP(sheetRow, yr) {
+    const gdp = get(142, yr);
+    const val = get(sheetRow, yr);
+    return gdp ? round1(val / gdp * 100) : null;
+  }
+
+  function domesticBalancePctGDP(yr) {
+    const gdp = get(142, yr);
+    const overallBalance = get(109, yr);
+    const foreignCapex = get(82, yr);
+    const grants = get(94, yr);
+    return gdp ? round1((overallBalance + foreignCapex - grants) / gdp * 100) : null;
+  }
+
+  const summaryAbs = {
+    years: fiscalYears.map(Number),
+    rev: fiscalYears.map(yr => round1(get(90, yr) / 1000)),
+    exp: fiscalYears.map(yr => round1(get(100, yr) / 1000)),
+    bal: fiscalYears.map(yr => round1(get(109, yr) / 1000)),
+    domBal: fiscalYears.map(yr => round1((get(109, yr) + get(82, yr) - get(94, yr)) / 1000)),
+    gdp: fiscalYears.map(yr => round1(get(142, yr) / 1000)),
+  };
+
+  const detailAbs = {
+    years: fiscalYears.map(Number),
+    rev_dom: fiscalYears.map(yr => round1((get(90, yr) - get(94, yr)) / 1000)),
+    rev_grant: fiscalYears.map(yr => round1(get(94, yr) / 1000)),
+    currExp: fiscalYears.map(yr => round1(get(101, yr) / 1000)),
+    capex: fiscalYears.map(yr => round1(get(105, yr) / 1000)),
+    bal: fiscalYears.map(yr => round1(get(109, yr) / 1000)),
+    domBal: fiscalYears.map(yr => round1((get(109, yr) + get(82, yr) - get(94, yr)) / 1000)),
+  };
+
+  const detailPct = {
+    years: fiscalYears.map(Number),
+    rev_dom: fiscalYears.map(yr => {
+      const gdp = get(142, yr);
+      return gdp ? round1((get(90, yr) - get(94, yr)) / gdp * 100) : null;
+    }),
+    rev_grant: fiscalYears.map(yr => pctGDP(94, yr)),
+    currExp: fiscalYears.map(yr => pctGDP(101, yr)),
+    capex: fiscalYears.map(yr => pctGDP(105, yr)),
+    bal: fiscalYears.map(yr => pctGDP(109, yr)),
+    domBal: fiscalYears.map(yr => domesticBalancePctGDP(yr)),
+  };
+
+  return {revPieOut, expPieOut, summaryAbs, detailAbs, detailPct, fiscalYears: fiscalYears.map(Number), pieYears};
+}
+
+/**
+ * Parse YTD Data and Plan Data sheets into YTD_DATA object.
+ *
+ * Both sheets share the same row structure:
+ *   Row 3 = year headers (col B onward)
+ *   Row 4 = Total Revenue (inc grants)
+ *   Row 6 = Tax Revenue
+ *   Row 50= Total Expenditure
+ *   Row 51= Current Expenditure
+ *   Row 72= Capital Expenditure
+ *   Row 80= Overall Balance
+ *   Row 83= Domestic Balance
+ */
+function parseYTDPlan(ytdTable, planTable) {
+  const YTD_CATS = [
+    'ລາຍຮັບທັງໝົດ',
+    'ລາຍຮັບພາຍໃນ',
+    'ລາຍຈ່າຍທັງໝົດ',
+    'ລາຍຈ່າຍປົກກະຕິ',
+    'ລາຍຈ່າຍລົງທຶນ',
+    'ດຸ່ນງົບປະມານ',
+    'ດຸ່ນພາຍໃນ',
+  ];
+
+  // Row structure: row indices (spreadsheet 1-based)
+  const ROW_MAP = {
+    totalRev:  4,
+    domesticRev: 5,
+    totalExp: 50,
+    currExp:  51,
+    capex:    72,
+    overBal:  80,
+    domBal:   83,
+  };
+
+  function buildYearColMap(table) {
+    const map = {};
+    const {yearCols} = detectYearColumns(table.rows, 1, 3);
+    yearCols.forEach(({year, colIdx}) => {
+      map[parseInt(year, 10)] = colIdx;
+    });
+    return map;
+  }
+
+  function getFromTable(table, sheetRowNum, colIdx) {
+    const rowIdx = sheetRowNum - 1;
+    if (rowIdx >= table.rows.length) return 0;
+    return cellVal(table.rows[rowIdx], colIdx) || 0;
+  }
+
+  const ytdYearCols  = buildYearColMap(ytdTable);
+  const planYearCols = buildYearColMap(planTable);
+
+  // Common years in both tables
+  const allYears = [...new Set([
+    ...Object.keys(ytdYearCols).map(Number),
+    ...Object.keys(planYearCols).map(Number),
+  ])].filter(y => y >= 2018).sort();
+
+  const ytdOut = {};
+  allYears.forEach(yr => {
+    const yCol = ytdYearCols[yr];
+    const pCol = planYearCols[yr];
+
+    function ytd(row) { return yCol !== undefined ? round0(getFromTable(ytdTable, row, yCol) / 1000) : null; }
+    function plan(row){ return pCol !== undefined ? round0(getFromTable(planTable, row, pCol) / 1000) : null; }
+    function pct(a, p) { return (a !== null && p !== null && p !== 0) ? round1(a / p * 100) : null; }
+
+    const actualArr = [
+      ytd(ROW_MAP.totalRev),
+      ytd(ROW_MAP.domesticRev),
+      ytd(ROW_MAP.totalExp),
+      ytd(ROW_MAP.currExp),
+      ytd(ROW_MAP.capex),
+      ytd(ROW_MAP.overBal),
+      ytd(ROW_MAP.domBal),
+    ];
+    const planArr = [
+      plan(ROW_MAP.totalRev),
+      plan(ROW_MAP.domesticRev),
+      plan(ROW_MAP.totalExp),
+      plan(ROW_MAP.currExp),
+      plan(ROW_MAP.capex),
+      plan(ROW_MAP.overBal),
+      plan(ROW_MAP.domBal),
+    ];
+    const pctArr = [
+      pct(actualArr[0], planArr[0]),
+      pct(actualArr[1], planArr[1]),
+      pct(actualArr[2], planArr[2]),
+      pct(actualArr[3], planArr[3]),
+      pct(actualArr[4], planArr[4]),
+      pct(actualArr[5], planArr[5]),
+      pct(actualArr[6], planArr[6]),
+    ];
+
+    ytdOut[yr] = {cats: YTD_CATS, actual: actualArr, plan: planArr, pct: pctArr};
+  });
+
+  return {ytdOut, allYears};
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════════════════
+function round1(v) { return Math.round(v * 10) / 10; }
+function round0(v) { return Math.round(v); }
+function fmtSigned(v, decimals = 1) {
+  if (v === null || v === undefined || Number.isNaN(v)) return '';
+  const abs = Highcharts.numberFormat(Math.abs(v), decimals);
+  return v < 0 ? `(${abs})` : abs;
+}
+
+function setStatus(state, text) {
+  const dot  = document.getElementById('statusDot');
+  const span = document.getElementById('statusText');
+  dot.className  = 'status-dot ' + state;
+  span.textContent = text;
+}
+
+function setLoading(show, detail) {
+  document.getElementById('loadingScreen').classList.toggle('hidden', !show);
+  if (detail) document.getElementById('loadingDetail').textContent = detail;
+}
+
+function showError(title, detail) {
+  document.getElementById('errorBanner').classList.add('visible');
+  document.getElementById('errorTitle').textContent  = title;
+  document.getElementById('errorDetail').textContent = detail || '';
+  document.getElementById('mainContent').style.display = 'none';
+  setStatus('err', 'ເຊື່ອມຕໍ່ບໍ່ສຳເລັດ');
+}
+
+function clearError() {
+  document.getElementById('errorBanner').classList.remove('visible');
+}
+
+function populateSelect(selectId, years, defaultYear) {
+  const sel = document.getElementById(selectId);
+  const prev = sel.value;
+  sel.innerHTML = '';
+  years.forEach(yr => {
+    const opt = document.createElement('option');
+    opt.value = yr;
+    opt.textContent = yr;
+    sel.appendChild(opt);
+  });
+  // Restore previous selection if still available, else use default
+  if (years.includes(parseInt(prev) || prev)) sel.value = prev;
+  else if (defaultYear !== undefined) sel.value = defaultYear;
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  MAIN DATA LOAD
+// ══════════════════════════════════════════════════════════════════
+async function loadData() {
+  if (SHEET_ID === 'YOUR_SHEET_ID_HERE') {
+    document.getElementById('configBanner').classList.remove('hidden');
+    setLoading(false);
+    setStatus('err', 'ຍັງບໍ່ໄດ້ຕັ້ງຄ່າ Sheet ID');
+    return;
+  }
+
+  setStatus('loading', 'ກຳລັງໂຫລດ…');
+  clearError();
+
+  try {
+    setLoading(true, `ກຳລັງດຶງຂໍ້ມູນ chart helper…`);
+    const [chartTable, stabilityTable, developmentTable, economicTable] = await Promise.all([
+      fetchSheet(SHEETS.chartData),
+      fetchSheet(SHEETS.stabilityData),
+      fetchSheet(SHEETS.developmentData),
+      fetchSheet(SHEETS.economicData),
+    ]);
+
+    setLoading(true, 'ກຳລັງປະມວນຜົນ…');
+
+    const chartParsed = parseChartHelper(chartTable);
+    const stabilityParsed = parseStabilityHelper(stabilityTable);
+    const developmentParsed = parseDevelopmentHelper(developmentTable);
+    const economicParsed = parseEconomicHelper(economicTable);
+
+    REVENUE_PIE     = chartParsed.revPieOut;
+    EXPENDITURE_PIE = chartParsed.expPieOut;
+    SUMMARY_PCT     = chartParsed.summaryPct;
+    DETAIL_ABS      = chartParsed.detailAbs;
+    DETAIL_PCT      = chartParsed.detailPct;
+    SUMMARY_END_YEARS = chartParsed.summaryEndYears;
+    DETAIL_PCT_END_YEARS = chartParsed.detailPctEndYears;
+    YTD_DATA        = chartParsed.ytdOut;
+    STABILITY_DATA  = stabilityParsed;
+    DEVELOPMENT_DATA = developmentParsed;
+    ECONOMIC_DATA = economicParsed;
+
+    // Update last-updated timestamp
+    const now = new Date();
+    document.getElementById('lastUpdated').textContent =
+      `ອັບເດດ: ${now.toLocaleDateString('lo-LA')} ${now.toLocaleTimeString('lo-LA', {hour:'2-digit', minute:'2-digit'})}`;
+    document.getElementById('dataNote').textContent =
+      `ແຫຼ່ງຂໍ້ມູນ: ກະຊວງການເງິນ, ສປປ ລາວ · Google Sheets (Live) · ອັບເດດ ${now.toLocaleDateString('lo-LA')}`;
+
+    setStatus('ok', 'ເຊື່ອມຕໍ່ Google Sheets ສຳເລັດ');
+    setLoading(false);
+    document.getElementById('mainContent').style.display = 'block';
+
+    renderAllCharts();
+
+  } catch (err) {
+    console.error(err);
+    setLoading(false);
+    showError(
+      'ໂຫລດຂໍ້ມູນຈາກ Google Sheets ບໍ່ສຳເລັດ',
+      `${err.message} — ກວດສອບວ່າ Sheet ໄດ້ Publish to web ແລ້ວ ແລະ Sheet ID ຖືກຕ້ອງ.`
+    );
+  }
+}
+
+async function refreshData() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  await loadData();
+  btn.classList.remove('spinning');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  HIGHCHARTS GLOBAL DEFAULTS
+// ══════════════════════════════════════════════════════════════════
+Highcharts.setOptions({
+  chart: {
+    style: {fontFamily:"'Noto Sans Lao',sans-serif"},
+    backgroundColor: 'transparent',
+    animation: {duration:350},
+  },
+  title:   {text: null},
+  credits: {enabled: false},
+  legend: {
+    itemStyle:      {fontWeight:'400', fontSize:'12px', color:'#3a3834'},
+    itemHoverStyle: {color:'#1a1916'},
+  },
+  tooltip: {
+    style:        {fontFamily:"'Noto Sans Lao',sans-serif", fontSize:'13px'},
+    borderRadius: 8,
+    shadow:       false,
+  },
+});
+
+// ══════════════════════════════════════════════════════════════════
+//  CHART RENDERS
+// ══════════════════════════════════════════════════════════════════
+
+function makePie(container, data) {
+  return Highcharts.chart(container, {
+    chart: {type:'pie', height:380},
+    tooltip: {
+      pointFormat: '<b>{point.name}</b><br/>{point.y:,.1f} ຕື້ກີບ<br/><b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: 'pointer',
+        dataLabels: {
+          enabled: true,
+          format: '{point.percentage:.0f}%',
+          distance: -30,
+          style: {fontWeight:'600', fontSize:'12px', color:'#fff', textOutline:'none'},
+          filter: {property:'percentage', operator:'>', value:4},
+        },
+        showInLegend: true,
+        borderWidth: 2,
+        borderColor: '#fff',
+        size: '80%',
+      },
+    },
+    legend: {
+      layout: 'vertical', align: 'right', verticalAlign: 'middle',
+      itemStyle: {fontSize:'11.5px', fontWeight:'400'}, width: 180,
+    },
+    series: [{name:'ມູນຄ່າ', colorByPoint:false, data}],
+  });
+}
+
+function updatePieCharts() {
+  const yr = parseInt(document.getElementById('pieYear').value);
+  if (!revPie || !expPie || !REVENUE_PIE[yr] || !EXPENDITURE_PIE[yr]) return;
+  document.getElementById('revPieTitle').textContent = `ໂຄງປະກອບລາຍຮັບງົບປະມານ ປີ ${yr}`;
+  document.getElementById('expPieTitle').textContent = `ໂຄງປະກອບລາຍຈ່າຍງົບປະມານ ປີ ${yr}`;
+  revPie.series[0].setData(REVENUE_PIE[yr], true, {duration:300});
+  expPie.series[0].setData(EXPENDITURE_PIE[yr], true, {duration:300});
+}
+
+const LINE_STYLE = {fontSize:'11px', fontWeight:'600', textOutline:'none'};
+
+function pickWindow(seriesObj, endYear, span = 6) {
+  const endIdx = seriesObj.years.indexOf(endYear);
+  if (endIdx === -1) return null;
+  const startIdx = Math.max(0, endIdx - span + 1);
+  const years = seriesObj.years.slice(startIdx, endIdx + 1);
+  const slice = arr => arr.slice(startIdx, endIdx + 1);
+  return {years, slice};
+}
+
+function buildSummaryPctChart(endYear) {
+  const win = pickWindow(SUMMARY_PCT, endYear, 6);
+  if (!win) return;
+  const rev = win.slice(SUMMARY_PCT.rev);
+  const exp = win.slice(SUMMARY_PCT.exp);
+  const bal = win.slice(SUMMARY_PCT.bal);
+  const dom = win.slice(SUMMARY_PCT.domBal);
+
+  document.getElementById('summarySubtitle').textContent = `ໜ່ວຍ: % ຂອງ GDP · ປີ ${win.years[0]}–${win.years[win.years.length - 1]}`;
+  return Highcharts.chart('summaryChart', {
+    chart: {height:440},
+    xAxis: {categories: win.years, labels:{style:{fontSize:'12px'}}, crosshair:true},
+    yAxis: {
+      title: {text:'(% ຂອງ GDP)', style:{fontSize:'12px', color:'#5c5a55'}},
+      labels: {format:'{value}', style:{fontSize:'12px'}},
+      gridLineColor: '#e0ddd6',
+      plotLines: [{value:0, color:'#c8c8c8', width:1, zIndex:3}],
+      min: -10,
+    },
+    tooltip: {shared:true, valueSuffix:'', valueDecimals:1},
+    plotOptions: {
+      column: {
+        grouping:true, pointPadding:0.08, groupPadding:0.18, borderWidth:0,
+        dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:{fontSize:'11px', fontWeight:'600', textOutline:'none'}},
+      },
+      line: {marker:{enabled:false}, dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:LINE_STYLE}},
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ລາຍຮັບທັງໝົດ', type:'column', data:rev, color:'#9bb8da'},
+      {name:'ລາຍຈ່າຍທັງໝົດ', type:'column', data:exp, color:'#efb382'},
+      {name:'ດຸ່ນງົບປະມານ', type:'line', data:bal, color:'#b0b0b0', lineWidth:2.5,
+        dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:{...LINE_STYLE, color:'#555'}}},
+      {name:'ດຸ່ນພາຍໃນ', type:'line', data:dom, color:'#5f8f3f', lineWidth:2.5,
+        dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:{...LINE_STYLE, color:'#33c853'}}},
+    ],
+  });
+}
+
+function buildDetailAbsChart() {
+  return Highcharts.chart('detailAbsChart', {
+    chart: {height:460},
+    xAxis: {categories: DETAIL_ABS.years, labels:{style:{fontSize:'12px'}}, crosshair:true},
+    yAxis: {
+      title: {text:'(ຕື້ກີບ)', style:{fontSize:'12px'}},
+      labels: {formatter() { return Highcharts.numberFormat(this.value, 0); }},
+      gridLineColor: '#e0ddd6',
+      plotLines: [{value:0, color:'#c8c8c8', width:1, zIndex:3}],
+      min: -20000,
+    },
+    tooltip: {shared:true},
+    plotOptions: {
+      column: {grouping:false, borderWidth:0},
+      line: {marker:{enabled:false}},
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ລາຍຮັບພາຍໃນ', type:'column', data:DETAIL_ABS.rev_dom, color:'rgba(72,137,204,0.78)', pointPlacement:-0.16, pointWidth:42},
+      {name:'ລາຍຮັບຊ່ວຍເຫຼືອລ້າ', type:'column', data:DETAIL_ABS.rev_grant, color:'rgba(151,190,231,0.72)', pointPlacement:-0.16, pointWidth:28},
+      {name:'ລາຍຈ່າຍປົກກະຕິ', type:'column', data:DETAIL_ABS.currExp, color:'rgba(232,124,42,0.88)', pointPlacement:0.16, pointWidth:42},
+      {name:'ລາຍຈ່າຍລົງທຶນ', type:'column', data:DETAIL_ABS.capex, color:'rgba(241,184,142,0.78)', pointPlacement:0.16, pointWidth:28},
+      {name:'ດຸ່ນງົບປະມານ', type:'line', data:DETAIL_ABS.bal, color:'#000000', lineWidth:2.5},
+      {name:'ດຸ່ນພາຍໃນ', type:'line', data:DETAIL_ABS.domBal, color:'#6d933f', lineWidth:2.5},
+    ],
+  });
+}
+
+function buildDetailPctChart(endYear) {
+  const win = pickWindow(DETAIL_PCT, endYear, 6);
+  if (!win) return;
+  document.getElementById('detailPctSubtitle').textContent = `ໜ່ວຍ: % ຂອງ GDP · ປີ ${win.years[0]}–${win.years[win.years.length - 1]}`;
+  return Highcharts.chart('detailPctChart', {
+    chart: {height:460},
+    xAxis: {categories: win.years, labels:{style:{fontSize:'12px'}}, crosshair:true},
+    yAxis: {
+      title: {text:'(% ຂອງ GDP)', style:{fontSize:'12px'}},
+      labels: {format:'{value}'},
+      gridLineColor: '#e0ddd6',
+      plotLines: [{value:0, color:'#c8c8c8', width:1, zIndex:3}],
+      min: -10,
+    },
+    tooltip: {shared:true},
+    plotOptions: {
+      column: {grouping:false, borderWidth:0},
+      line: {marker:{enabled:false}},
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ລາຍຮັບພາຍໃນ', type:'column', data:win.slice(DETAIL_PCT.rev_dom), color:'rgba(72,137,204,0.78)', pointPlacement:-0.16, pointWidth:42},
+      {name:'ລາຍຮັບຊ່ວຍເຫຼືອລ້າ', type:'column', data:win.slice(DETAIL_PCT.rev_grant), color:'rgba(151,190,231,0.72)', pointPlacement:-0.16, pointWidth:28},
+      {name:'ລາຍຈ່າຍປົກກະຕິ', type:'column', data:win.slice(DETAIL_PCT.currExp), color:'rgba(232,124,42,0.88)', pointPlacement:0.16, pointWidth:42},
+      {name:'ລາຍຈ່າຍລົງທຶນ', type:'column', data:win.slice(DETAIL_PCT.capex), color:'rgba(241,184,142,0.78)', pointPlacement:0.16, pointWidth:28},
+      {name:'ດຸ່ນງົບປະມານ', type:'line', data:win.slice(DETAIL_PCT.bal), color:'#000000', lineWidth:2.5,
+        dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:{...LINE_STYLE, color:'#000'}}},
+      {name:'ດຸ່ນພາຍໃນ', type:'line', data:win.slice(DETAIL_PCT.domBal), color:'#6d933f', lineWidth:2.5,
+        dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:{...LINE_STYLE, color:'#4caf50'}}},
+    ],
+  });
+}
+
+function updateSummaryChart() {
+  const yr = parseInt(document.getElementById('summaryYear').value, 10);
+  if (summaryChart) summaryChart.destroy();
+  summaryChart = buildSummaryPctChart(yr);
+}
+
+function updateDetailPctChart() {
+  const yr = parseInt(document.getElementById('detailPctYear').value, 10);
+  if (detailPctChart) detailPctChart.destroy();
+  detailPctChart = buildDetailPctChart(yr);
+}
+
+function buildYTDChart(yr) {
+  const d = YTD_DATA[yr];
+  if (!d) return;
+  const pctVals = d.pct.filter(v => v !== null && v !== undefined);
+  const pctMin = pctVals.length ? Math.min(...pctVals) : 0;
+  const pctMax = pctVals.length ? Math.max(...pctVals) : 100;
+  const pctAxisMin = Math.min(-600, Math.floor(pctMin / 50) * 50);
+  const pctAxisMax = Math.max(400, Math.ceil(pctMax / 50) * 50);
+  return Highcharts.chart('ytdChart', {
+    chart: {height:420},
+    xAxis: {
+      categories: d.cats,
+      labels: {style:{fontSize:'12px'}, rotation:-10},
+      crosshair: true,
+    },
+    yAxis: [
+      {
+        title: {text:'ຕື້ກີບ', style:{fontSize:'12px', color:'#5c5a55'}},
+        labels: {
+          formatter() { return Highcharts.numberFormat(this.value, 0); },
+          style: {fontSize:'12px'},
+        },
+        gridLineColor: '#e0ddd6',
+        plotLines: [{value:0, color:'#aaa', width:1, zIndex:3}],
+      },
+      {
+        title: {text:'% ທີ່ປະຕິບັດໄດ້', style:{fontSize:'12px', color:'#b5341a'}},
+        labels: {format:'{value}%', style:{fontSize:'12px', color:'#b5341a'}},
+        opposite:true, min:pctAxisMin, max:pctAxisMax, gridLineWidth:0,
+      },
+    ],
+    tooltip: {shared:true, borderRadius:8},
+    plotOptions: {
+      column: {
+        grouping:true, pointPadding:0.05, groupPadding:0.15, borderRadius:2,
+        dataLabels: {
+          enabled: true,
+          formatter() {
+            return this.y < 0
+              ? '(' + Highcharts.numberFormat(Math.abs(this.y), 0) + ')'
+              : Highcharts.numberFormat(this.y, 0);
+          },
+          style: {fontSize:'10px', fontWeight:'500', textOutline:'none'},
+        },
+      },
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ປະຕິບັດໄດ້ 9 ເດືອນ', type:'column', data:d.actual, color:'rgba(188,200,242,0.9)', borderColor:'rgba(188,200,242,0.9)', yAxis:0},
+      {
+        name:'ແຜນປີ', type:'column', data:d.plan, yAxis:0,
+        color:'rgba(255,255,255,0)', borderColor:'#00a6ff', borderWidth:1.5,
+      },
+      {
+        name:'% ທີ່ປະຕິບັດໄດ້ (ແກນຂວາ)', type:'line', data:d.pct, yAxis:1,
+        color:'#ff0000', lineWidth:3, connectNulls:false,
+        marker: {enabled:false},
+        dataLabels: {
+          enabled:true,
+          formatter() { return Highcharts.numberFormat(this.y, 0); },
+          style: {fontSize:'11px', fontWeight:'600', color:'#ff0000', textOutline:'none'},
+          verticalAlign:'bottom', y:-8,
+        },
+      },
+    ],
+  });
+}
+
+function buildInflationChart() {
+  const d = STABILITY_DATA.inflation;
+  if (!d) return;
+  return Highcharts.chart('inflationChart', {
+    chart: {height:520},
+    xAxis: {
+      categories: d.categories,
+      labels: {rotation:-90, style:{fontSize:'11px'}},
+      crosshair: true,
+    },
+    yAxis: {
+      title: {text:'(%, yoy)', align:'high', rotation:0, x:-20, y:-10, style:{fontSize:'12px'}},
+      gridLineColor: '#e0ddd6',
+      plotLines: [{value:0, color:'#c8c8c8', width:1, zIndex:3}],
+      min: -5,
+      max: 45,
+    },
+    tooltip: {shared:true, valueDecimals:2},
+    plotOptions: {
+      column: {stacking:'normal', borderWidth:0, pointPadding:0.03, groupPadding:0.04},
+      line: {marker:{enabled:false}, lineWidth:3},
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      ...d.parts.map(part => ({name: part.name, type:'column', data: part.data, color: part.color})),
+      {name:'ອັດຕາເງິນເຟີ້', type:'line', data:d.total, color:'#4472c4'},
+    ],
+  });
+}
+
+function buildBopChart() {
+  const d = STABILITY_DATA.bop;
+  if (!d) return;
+  return Highcharts.chart('bopChart', {
+    chart: {height:460},
+    xAxis: {categories:d.categories, labels:{style:{fontSize:'12px'}}},
+    yAxis: [{
+      title: {text:'(ລ້ານ ໂດລາ)', align:'high', rotation:0, x:-20, y:-10, style:{fontSize:'12px'}},
+      gridLineColor: '#e0ddd6',
+      plotLines: [{value:0, color:'#c8c8c8', width:1, zIndex:3}],
+    }, {
+      title: {text:''},
+      opposite: true,
+      min: 0,
+      max: 400,
+      tickInterval: 50,
+      labels: {formatter() { return Highcharts.numberFormat(this.value, 1); }},
+      gridLineWidth: 0,
+    }],
+    tooltip: {shared:true},
+    plotOptions: {
+      column: {
+        grouping:true,
+        pointPadding:0.06,
+        groupPadding:0.14,
+        borderWidth:0,
+        dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:{fontSize:'11px', textOutline:'none'}},
+      },
+      line: {
+        marker:{enabled:true, radius:3},
+        dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:{fontSize:'11px', textOutline:'none'}},
+      },
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ດຸນບັນຊີຊຳລະປົກກະຕິ/Current Account', type:'column', data:d.currentAccount, color:'#4472c4'},
+      {name:'ດຸນບັນຊີທຶນ/ Financial Account', type:'column', data:d.financialAccount, color:'#a5a5a5'},
+      {name:'ດຸນບັນຊີທຶນ/ Capital Account', type:'column', data:d.capitalAccount, color:'#ed7d31'},
+      {name:'ລາຍການຄວາມຄາດເຄື່ອນ/Net Errors and Omissions', type:'column', data:d.netErrors, color:'#ffc000'},
+      {name:'ຄັງສຳຮອງເງິນຕາຕ່າງປະເທດ/Reserves and Related Items', type:'column', data:d.reserves, color:'#70ad47'},
+      {name:'ດຸນລວມ/Overall Balance (right axis)', type:'line', yAxis:1, data:d.overallBalance, color:'#5b9bd5'},
+    ],
+  });
+}
+
+function buildCurrentAccountChart() {
+  const d = STABILITY_DATA.currentAccount;
+  if (!d) return;
+  return Highcharts.chart('currentAccountChart', {
+    chart: {height:460},
+    xAxis: {categories:d.categories, labels:{style:{fontSize:'12px'}}},
+    yAxis: {
+      title: {text:'(ລ້ານ ໂດລາ)', align:'high', rotation:0, x:-20, y:-10, style:{fontSize:'12px'}},
+      gridLineColor: '#e0ddd6',
+      plotLines: [{value:0, color:'#c8c8c8', width:1, zIndex:3}],
+    },
+    tooltip: {shared:true},
+    plotOptions: {
+      column: {
+        grouping:true,
+        pointPadding:0.06,
+        groupPadding:0.14,
+        borderWidth:0,
+        dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:{fontSize:'11px', textOutline:'none'}},
+      },
+      line: {
+        marker:{enabled:true, radius:3},
+        dataLabels:{enabled:true, formatter() { return fmtSigned(this.y); }, style:{fontSize:'11px', textOutline:'none'}},
+      },
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ດຸນການຄ້າດ້ານສິນຄ້າ/Trade Balance', type:'column', data:d.tradeBalance, color:'#ed7d31'},
+      {name:'ດຸນການຄ້າດ້ານບໍລິການ/Service Balance', type:'column', data:d.serviceBalance, color:'#a5a5a5'},
+      {name:'ລາຍຮັບຂັ້ນໜຶ່ງ ສຸດທິ/Primary income: net', type:'column', data:d.primaryIncomeNet, color:'#ffc000'},
+      {name:'ລາຍຮັບຂັ້ນສອງ ສຸດທິ/Secondary income: net', type:'column', data:d.secondaryIncomeNet, color:'#5b9bd5'},
+      {name:'ດຸນບັນຊີຊຳລະປົກກະຕິ/Current Account', type:'line', data:d.currentAccount, color:'#4472c4'},
+    ],
+  });
+}
+
+function buildLdcChart() {
+  const d = DEVELOPMENT_DATA.ldc;
+  if (!d) return;
+  return Highcharts.chart('ldcChart', {
+    chart: {height:500},
+    xAxis: {categories:d.categories, labels:{style:{fontSize:'12px'}}},
+    yAxis: [{
+      title: {text:''},
+      min: 0,
+      max: 80,
+      tickInterval: 10,
+      gridLineColor: '#e0ddd6',
+    }, {
+      title: {text:''},
+      opposite: true,
+      min: 0,
+      max: 3000,
+      tickInterval: 500,
+      gridLineWidth: 0,
+    }],
+    tooltip: {shared:true},
+    plotOptions: {
+      column: {
+        grouping:true,
+        pointPadding:0.08,
+        groupPadding:0.18,
+        borderWidth:0,
+        dataLabels:{enabled:true, formatter() { return Highcharts.numberFormat(this.y, 1); }, style:{fontSize:'11px', textOutline:'none'}},
+      },
+      line: {
+        marker:{enabled:true, radius:4},
+        dataLabels:{enabled:true, formatter() { return Highcharts.numberFormat(this.y, 0); }, style:{fontSize:'11px', textOutline:'none'}},
+      },
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ດັດຊະນີຊັບສິນມະນຸດ (HAI) >66', type:'column', data:d.hai, color:'#5b9bd5'},
+      {name:'ດັດຊະນີຄວາມເປາະບາງ (EVI) <32', type:'column', data:d.evi, color:'#ffc000'},
+      {name:'ລາຍໄດ້ເຂົ້າຫົວຄົນຕໍ່າ (GNI) USD >$1,306', type:'line', yAxis:1, data:d.gni, color:'#70ad47'},
+    ],
+  });
+}
+
+function buildRiceChart() {
+  const d = DEVELOPMENT_DATA.rice;
+  if (!d) return;
+  return Highcharts.chart('riceChart', {
+    chart: {height:460},
+    xAxis: {categories:d.categories},
+    yAxis: {
+      title: {text:'(ໂຕນ)', align:'high', rotation:0, x:-20, y:-10, style:{fontSize:'12px'}},
+      labels: {formatter() { return Highcharts.numberFormat(this.value, 0); }},
+      gridLineColor: '#e0ddd6',
+    },
+    tooltip: {shared:true},
+    plotOptions: {
+      area: {stacking:'normal', marker:{enabled:false}, lineWidth:0},
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ການປູກເຂົ້ານາໃນລະດູແລ້ງ', type:'area', data:d.drySeason, color:'#ed7d31'},
+      {name:'ການປູກເຂົ້ານາແຊງ', type:'area', data:d.wetSeason, color:'#4472c4'},
+      {name:'ການປູກເຂົ້າຝົນເຂດເນີນສູງ', type:'area', data:d.upland, color:'#a5a5a5'},
+    ],
+  });
+}
+
+function buildDropoutChart() {
+  const d = DEVELOPMENT_DATA.dropout;
+  if (!d) return;
+  return Highcharts.chart('dropoutChart', {
+    chart: {height:460},
+    xAxis: {categories:d.categories},
+    yAxis: {
+      title: {text:'(%)', align:'high', rotation:0, x:-20, y:-10, style:{fontSize:'12px'}},
+      max: 35,
+      tickInterval: 5,
+      gridLineColor: '#e0ddd6',
+    },
+    tooltip: {shared:true},
+    plotOptions: {
+      column: {
+        stacking:'normal',
+        borderWidth:0,
+        dataLabels:{enabled:true, formatter() { return Highcharts.numberFormat(this.y, 1); }, style:{fontSize:'11px', textOutline:'none'}},
+      },
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ອັດຕາການປະລະການໃນຊັ້ນປະຖົມ', type:'column', data:d.primary, color:'#ffd966'},
+      {name:'ອັດ​ຕາ​​ການ​ປະລະການຮຽນໃນຊັ້ນ​ມັດ​ທະ​ຍົມ​ຕອນ​ຕົ້ນ', type:'column', data:d.lowerSecondary, color:'#93c47d'},
+      {name:'ອັດ​ຕາ​ການ​ປະລະການຮຽນໃນຊັ້ນ​ມັດ​ທະ​ຍົມ​ປາຍ', type:'column', data:d.upperSecondary, color:'#d35400'},
+    ],
+  });
+}
+
+function buildMalnutritionChart() {
+  const d = DEVELOPMENT_DATA.malnutrition;
+  if (!d) return;
+  return Highcharts.chart('malnutritionChart', {
+    chart: {height:460},
+    xAxis: {categories:d.categories},
+    yAxis: {
+      title: {text:''},
+      max: 50,
+      tickInterval: 5,
+      gridLineColor: '#e0ddd6',
+    },
+    tooltip: {shared:true},
+    plotOptions: {
+      column: {grouping:true, borderWidth:0},
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ອັດຕາການຂາດສານອາຫານຊໍ້າເຮື້ອແບບລວງສູງບໍ່ໄດ້ມາດຕະຖານ ຂອງເດັກອາຍຸຕໍ່່າກວ່າ 5 ປີ', type:'column', data:d.stunting, color:'#5a8a36'},
+      {name:'ອັດຕາການຂາດສານອາຫານກະທັນຫັນແບບຈ່ອຍຜ່ອມ ຂອງເດັກອາຍຸຕໍ່່າກວ່າ 5 ປີ', type:'column', data:d.wasting, color:'#ff0d0d'},
+      {name:'ອັດຕາການຂາດສານອາຫານແບບນຳ້ໜັກຫຼຸດມາດຕະຖານ ຂອງເດັກອາຍຸຕໍ່່າກວ່າ 5 ປີ', type:'column', data:d.underweight, color:'#c65d0a'},
+    ],
+  });
+}
+
+function buildJobsChart(containerId, data, title) {
+  if (!data) return;
+  return Highcharts.chart(containerId, {
+    chart: {height:460},
+    title: {text: title, style:{fontSize:'18px', fontWeight:'600'}},
+    xAxis: {categories:data.categories},
+    yAxis: {
+      title: {text:'(ເທື່ອຄົນ)', align:'high', rotation:0, x:-20, y:-10, style:{fontSize:'12px'}},
+      labels: {formatter() { return Highcharts.numberFormat(this.value, 0); }},
+      gridLineColor: '#e0ddd6',
+    },
+    tooltip: {shared:true},
+    plotOptions: {
+      area: {stacking:'normal', marker:{enabled:false}, lineWidth:0},
+      line: {
+        marker:{enabled:false},
+        dataLabels:{enabled:true, formatter() { return Highcharts.numberFormat(this.y, 0); }, style:{fontSize:'12px', textOutline:'none'}},
+      },
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ວິຊາການ', type:'area', data:data.technical, color:'#4f77c3'},
+      {name:'ອຸດສາຫະກຳ', type:'area', data:data.industrial, color:'#f3802b'},
+      {name:'ການບໍລິການ', type:'area', data:data.services, color:'#a6a6a6'},
+      {name:'ລວມ', type:'line', data:data.total, color:'#ffc000', lineWidth:3},
+    ],
+  });
+}
+
+function buildGrowthContributionChart() {
+  const d = ECONOMIC_DATA.growthContribution;
+  if (!d) return;
+
+  return Highcharts.chart('growthContributionChart', {
+    chart: {height:460},
+    xAxis: {categories:d.categories},
+    yAxis: {
+      title: {text:''},
+      min: 0,
+      max: 6,
+      tickInterval: 1,
+      gridLineColor: '#e0ddd6',
+    },
+    tooltip: {
+      shared:true,
+      pointFormatter() {
+        if (this.y === null) return '';
+        return `<span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${Highcharts.numberFormat(this.y, 1)}</b><br/>`;
+      },
+    },
+    plotOptions: {
+      column: {
+        stacking:'normal',
+        borderWidth:0,
+        groupPadding:0.18,
+        pointPadding:0.04,
+        dataLabels:{
+          enabled:true,
+          formatter() { return this.y === null ? null : Highcharts.numberFormat(this.y, 1); },
+          style:{fontSize:'11px', textOutline:'none', fontWeight:'500'},
+        },
+      },
+      line: {
+        lineWidth:4,
+        marker:{enabled:true, radius:5, symbol:'circle'},
+        dataLabels:{
+          enabled:true,
+          formatter() { return Highcharts.numberFormat(this.y, 1); },
+          style:{fontSize:'13px', textOutline:'none', fontWeight:'700'},
+          y:-12,
+        },
+      },
+    },
+    legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
+    series: [
+      {name:'ກະສິກຳ', type:'column', data:d.agriculture, color:'#4472c4'},
+      {name:'ອຸດສາຫະກຳ', type:'column', data:d.industry, color:'#ed7d31'},
+      {name:'ບໍລິການ', type:'column', data:d.services, color:'#a5a5a5'},
+      {name:'ພາສີອາກອນຜະລິດຕະພັນ, ສຸດທິ', type:'column', data:d.taxes, color:'#ffc000'},
+      {name:'ລວມຍອດຜະລິດຕະພັນພາຍໃນ', type:'line', data:d.total, color:'#5b9bd5'},
+    ],
+  });
+}
+
+function updateYTDChart() {
+  const yr = parseInt(document.getElementById('ytdYear').value);
+  document.getElementById('ytdTitle').textContent =
+    `ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ ປະຈໍາປີ ${yr}`;
+  if (ytdChart) ytdChart.destroy();
+  ytdChart = buildYTDChart(yr);
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  RENDER ALL CHARTS (called after data loads)
+// ══════════════════════════════════════════════════════════════════
+function renderAllCharts() {
+  // Pie charts
+  const pieYears = Object.keys(REVENUE_PIE).map(Number).sort();
+  if (pieYears.length) {
+    const defaultPie = pieYears[pieYears.length - 1];
+    populateSelect('pieYear', pieYears, defaultPie);
+    document.getElementById('revPieTitle').textContent = `ໂຄງປະກອບລາຍຮັບງົບປະມານ ປີ ${defaultPie}`;
+    document.getElementById('expPieTitle').textContent = `ໂຄງປະກອບລາຍຈ່າຍງົບປະມານ ປີ ${defaultPie}`;
+    if (revPie) revPie.destroy();
+    if (expPie) expPie.destroy();
+    revPie = makePie('revPieChart', REVENUE_PIE[defaultPie]);
+    expPie = makePie('expPieChart', EXPENDITURE_PIE[defaultPie]);
+  }
+
+  // Summary % GDP
+  if (SUMMARY_END_YEARS.length) {
+    const defaultSummary = SUMMARY_END_YEARS[SUMMARY_END_YEARS.length - 1];
+    populateSelect('summaryYear', SUMMARY_END_YEARS, defaultSummary);
+    if (summaryChart) summaryChart.destroy();
+    summaryChart = buildSummaryPctChart(defaultSummary);
+  }
+
+  // Detail absolute
+  if (detailAbsChart) detailAbsChart.destroy();
+  detailAbsChart = buildDetailAbsChart();
+
+  // Detail % GDP
+  if (DETAIL_PCT_END_YEARS.length) {
+    const defaultDetailPct = DETAIL_PCT_END_YEARS[DETAIL_PCT_END_YEARS.length - 1];
+    populateSelect('detailPctYear', DETAIL_PCT_END_YEARS, defaultDetailPct);
+    if (detailPctChart) detailPctChart.destroy();
+    detailPctChart = buildDetailPctChart(defaultDetailPct);
+  }
+
+  // YTD chart
+  const ytdYears = Object.keys(YTD_DATA).map(Number).sort();
+  if (ytdYears.length) {
+    const defaultYtd = ytdYears[ytdYears.length - 1];
+    populateSelect('ytdYear', ytdYears, defaultYtd);
+    document.getElementById('ytdTitle').textContent =
+      `ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ ປະຈໍາປີ ${defaultYtd}`;
+    if (ytdChart) ytdChart.destroy();
+    ytdChart = buildYTDChart(defaultYtd);
+  }
+
+  if (inflationChart) inflationChart.destroy();
+  inflationChart = buildInflationChart();
+
+  if (bopChart) bopChart.destroy();
+  bopChart = buildBopChart();
+
+  if (currentAccountChart) currentAccountChart.destroy();
+  currentAccountChart = buildCurrentAccountChart();
+
+  if (ldcChart) ldcChart.destroy();
+  ldcChart = buildLdcChart();
+
+  if (riceChart) riceChart.destroy();
+  riceChart = buildRiceChart();
+
+  if (dropoutChart) dropoutChart.destroy();
+  dropoutChart = buildDropoutChart();
+
+  if (malnutritionChart) malnutritionChart.destroy();
+  malnutritionChart = buildMalnutritionChart();
+
+  if (domesticJobsChart) domesticJobsChart.destroy();
+  domesticJobsChart = buildJobsChart('domesticJobsChart', DEVELOPMENT_DATA.domesticJobs, 'ການຈັດຫາອຸກອາຮັດວຽກງານພາຍໃນປະເທດ');
+
+  if (foreignJobsChart) foreignJobsChart.destroy();
+  foreignJobsChart = buildJobsChart('foreignJobsChart', DEVELOPMENT_DATA.foreignJobs, 'ການຈັດຫາອຸກອາຮັດວຽກງານໄປຕ່າງປະເທດ');
+
+  if (growthContributionChart) growthContributionChart.destroy();
+  growthContributionChart = buildGrowthContributionChart();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  BOOTSTRAP
+// ══════════════════════════════════════════════════════════════════
+loadData();
+
+// Auto-refresh
+if (AUTO_REFRESH_MINUTES > 0) {
+  setInterval(refreshData, AUTO_REFRESH_MINUTES * 60 * 1000);
+}
+</script>
+</body>
+</html>
