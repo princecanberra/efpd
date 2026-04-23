@@ -1494,7 +1494,22 @@ function buildYTDChart(yr) {
   const pctAxisMin = Math.min(-600, Math.floor(pctMin / 50) * 50);
   const pctAxisMax = Math.max(400, Math.ceil(pctMax / 50) * 50);
   return Highcharts.chart('ytdChart', {
-    chart: {height:420},
+    chart: {
+      height:420,
+      events: {
+        render() {
+          const planSeries = this.series.find(series => series.name === 'ແຜນປີ');
+          const planSymbol = planSeries?.legendItem?.symbol;
+          if (planSymbol) {
+            planSymbol.attr({
+              fill: 'rgba(255,255,255,0)',
+              stroke: '#00a6ff',
+              'stroke-width': 1.5,
+            });
+          }
+        },
+      },
+    },
     xAxis: {
       categories: d.cats,
       labels: {style:{fontSize:'12px'}, rotation:-10},
