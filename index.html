@@ -605,7 +605,7 @@ function parseChartHelper(table) {
     domBal: pctFromAbs(23),
   };
 
-  const detailAbsYears = yearColsAt(19, 2, 2015);
+  const detailAbsYears = yearColsAt(28, 2, 2015);
   const detailAbs = {
     years: detailAbsYears.map(y => parseInt(y.year, 10)),
     rev_dom: rowValues(29, detailAbsYears),
@@ -696,38 +696,84 @@ function parseStabilityHelper(table) {
     return out;
   }
 
+  function lastFilledCol(rowIdx, startCol) {
+    let endCol = startCol - 1;
+    const width = rows[rowIdx]?.c?.length || 0;
+    for (let colIdx = startCol; colIdx < width; colIdx++) {
+      const value = cellVal(rows[rowIdx], colIdx);
+      if (value === null || value === undefined || value === '') break;
+      endCol = colIdx;
+    }
+    return endCol;
+  }
+
+  function lastMeaningfulCol(rowIndexes, startCol) {
+    let endCol = startCol - 1;
+    const width = Math.max(...rowIndexes.map(rowIdx => rows[rowIdx]?.c?.length || 0), 0);
+    for (let colIdx = startCol; colIdx < width; colIdx++) {
+      let hasAnyValue = false;
+      let hasNonZeroValue = false;
+      rowIndexes.forEach(rowIdx => {
+        const numeric = numOrNull(rows[rowIdx], colIdx);
+        if (numeric !== null) {
+          hasAnyValue = true;
+          if (numeric !== 0) hasNonZeroValue = true;
+        }
+      });
+      if (!hasAnyValue) break;
+      if (hasNonZeroValue) endCol = colIdx;
+    }
+    return endCol;
+  }
+
+  let inflationEndCol = 1;
+  for (let colIdx = 2; colIdx < (rows[0]?.c?.length || 0); colIdx++) {
+    const label = cellFmt(0, colIdx);
+    if (!label) break;
+    inflationEndCol = colIdx;
+  }
+
   const inflationCats = [];
-  for (let colIdx = 2; colIdx <= 37; colIdx++) inflationCats.push(cellFmt(0, colIdx));
+  for (let colIdx = 2; colIdx <= inflationEndCol; colIdx++) inflationCats.push(cellFmt(0, colIdx));
 
   const inflation = {
     categories: inflationCats,
-    total: seriesFromRow(1, 2, 37),
+    total: seriesFromRow(1, 2, inflationEndCol),
     parts: [
-      {name:'ໝວດອາຫານ ແລະ ເຄື່ອງດື່ມບໍ່ແມ່ນທາດເຫຼົ້າ', data:seriesFromRow(2, 2, 37), color:'#f07f2f'},
-      {name:'ໝວດເຫຼົ້າ ແລະ ຢາສູບ', data:seriesFromRow(3, 2, 37), color:'#b3b3b3'},
-      {name:'ໝວດເຄື່ອງນຸ່ງຫົ່ມ ແລະ ເກີບ', data:seriesFromRow(4, 2, 37), color:'#ffc000'},
-      {name:'ໝວດທີ່ພັກອາໄສ, ນໍ້າປະປາ, ໄຟຟ້າ ແລະ ເຊື້ອເພີງ', data:seriesFromRow(5, 2, 37), color:'#6fa8dc'},
-      {name:'ໝວດເຄື່ອງໃຊ້ໃນເຮືອນ', data:seriesFromRow(6, 2, 37), color:'#70ad47'},
-      {name:'ໝວດການຮັກສາສຸຂະພາບ', data:seriesFromRow(7, 2, 37), color:'#2f5597'},
-      {name:'ໝວດຄົມມະນາຄົມ ແລະ ຂົນສົ່ງ', data:seriesFromRow(8, 2, 37), color:'#9e480e'},
-      {name:'ໝວດໄປສະນີ ແລະ ໂທລະຄົມມະນາຄົມ', data:seriesFromRow(9, 2, 37), color:'#636363'},
-      {name:'ໝວດການບັນເທິງ ແລະ ພັກຜ່ອນ', data:seriesFromRow(10, 2, 37), color:'#548235'},
-      {name:'ໝວດການສຶກສາ', data:seriesFromRow(11, 2, 37), color:'#5b9bd5'},
-      {name:'ໝວດຮ້ານອາຫານ ແລະ ໂຮງແຮມ', data:seriesFromRow(12, 2, 37), color:'#385723'},
-      {name:'ໝວດສິນຄ້າ ແລະ ບໍລິການອື່ນໆ', data:seriesFromRow(13, 2, 37), color:'#8faadc'},
+      {name:'ໝວດອາຫານ ແລະ ເຄື່ອງດື່ມບໍ່ແມ່ນທາດເຫຼົ້າ', data:seriesFromRow(2, 2, inflationEndCol), color:'#f07f2f'},
+      {name:'ໝວດເຫຼົ້າ ແລະ ຢາສູບ', data:seriesFromRow(3, 2, inflationEndCol), color:'#b3b3b3'},
+      {name:'ໝວດເຄື່ອງນຸ່ງຫົ່ມ ແລະ ເກີບ', data:seriesFromRow(4, 2, inflationEndCol), color:'#ffc000'},
+      {name:'ໝວດທີ່ພັກອາໄສ, ນໍ້າປະປາ, ໄຟຟ້າ ແລະ ເຊື້ອເພີງ', data:seriesFromRow(5, 2, inflationEndCol), color:'#6fa8dc'},
+      {name:'ໝວດເຄື່ອງໃຊ້ໃນເຮືອນ', data:seriesFromRow(6, 2, inflationEndCol), color:'#70ad47'},
+      {name:'ໝວດການຮັກສາສຸຂະພາບ', data:seriesFromRow(7, 2, inflationEndCol), color:'#2f5597'},
+      {name:'ໝວດຄົມມະນາຄົມ ແລະ ຂົນສົ່ງ', data:seriesFromRow(8, 2, inflationEndCol), color:'#9e480e'},
+      {name:'ໝວດໄປສະນີ ແລະ ໂທລະຄົມມະນາຄົມ', data:seriesFromRow(9, 2, inflationEndCol), color:'#636363'},
+      {name:'ໝວດການບັນເທິງ ແລະ ພັກຜ່ອນ', data:seriesFromRow(10, 2, inflationEndCol), color:'#548235'},
+      {name:'ໝວດການສຶກສາ', data:seriesFromRow(11, 2, inflationEndCol), color:'#5b9bd5'},
+      {name:'ໝວດຮ້ານອາຫານ ແລະ ໂຮງແຮມ', data:seriesFromRow(12, 2, inflationEndCol), color:'#385723'},
+      {name:'ໝວດສິນຄ້າ ແລະ ບໍລິການອື່ນໆ', data:seriesFromRow(13, 2, inflationEndCol), color:'#8faadc'},
     ],
   };
 
-  const bopCats = [];
-  for (let rowIdx = 22; rowIdx <= 24; rowIdx++) bopCats.push(textVal(rows[rowIdx], 1).replace('_', '-'));
+  const bopLabelRows = [];
+  rows.forEach(row => {
+    const raw = textVal(row, 1);
+    if (!/^Q[1-4]_\d{4}$/.test(raw)) return;
+    const match = raw.match(/^Q([1-4])_(\d{4})$/);
+    bopLabelRows.push(`${match[2]}-Q${match[1]}`);
+  });
+  const bopEndCol = lastFilledCol(91, 2);
+  const bopPointCount = Math.max(0, bopEndCol - 1);
+  const bopStartIdx = Math.max(0, bopPointCount - 3);
+  const bopSlice = (rowIdx) => seriesFromRow(rowIdx, 2, bopEndCol).slice(bopStartIdx);
   const bop = {
-    categories: bopCats,
-    currentAccount: seriesFromRow(37, 6, 8),
-    capitalAccount: seriesFromRow(52, 6, 8),
-    financialAccount: seriesFromRow(56, 6, 8),
-    netErrors: seriesFromRow(90, 6, 8),
-    reserves: seriesFromRow(92, 6, 8),
-    overallBalance: seriesFromRow(91, 6, 8),
+    categories: bopLabelRows.slice(bopStartIdx, bopPointCount),
+    currentAccount: bopSlice(37),
+    capitalAccount: bopSlice(52),
+    financialAccount: bopSlice(56),
+    netErrors: bopSlice(90),
+    reserves: bopSlice(92),
+    overallBalance: bopSlice(91),
   };
 
   const currentStartLabel = textVal(rows[108], 1);
@@ -765,49 +811,100 @@ function parseDevelopmentHelper(table) {
     return out;
   }
 
-  const ldc = {
-    categories: [2000, 2003, 2006, 2009, 2012, 2015, 2018, 2021, 2024],
-    gni: [290, 320, 440, 630, 913, 1232, 1996, 2495, 2503],
-    hai: [39.5, 42.1, 48.2, 53.3, 58.5, 60.8, 72.8, 71.5, 74.8],
-    evi: [52, 50.8, 49.5, 45.2, 36.1, 36.2, 33.7, 27.2, 24.1],
-  };
+  function seriesZeroFill(rowIdx, startCol, endCol, scale = 1) {
+    const out = [];
+    for (let colIdx = startCol; colIdx <= endCol; colIdx++) {
+      const v = numOrNull(rows[rowIdx], colIdx);
+      out.push(v === null ? 0 : round1(v / scale));
+    }
+    return out;
+  }
+
+  function lastFilledCol(rowIdx, startCol) {
+    let endCol = startCol - 1;
+    const width = rows[rowIdx]?.c?.length || 0;
+    for (let colIdx = startCol; colIdx < width; colIdx++) {
+      const value = cellVal(rows[rowIdx], colIdx);
+      if (value === null || value === undefined || value === '') break;
+      endCol = colIdx;
+    }
+    return endCol;
+  }
+
+  function lastMeaningfulCol(rowIndexes, startCol) {
+    let endCol = startCol - 1;
+    const width = Math.max(...rowIndexes.map(rowIdx => rows[rowIdx]?.c?.length || 0), 0);
+    for (let colIdx = startCol; colIdx < width; colIdx++) {
+      let hasAnyValue = false;
+      let hasNonZeroValue = false;
+      rowIndexes.forEach(rowIdx => {
+        const numeric = numOrNull(rows[rowIdx], colIdx);
+        if (numeric !== null) {
+          hasAnyValue = true;
+          if (numeric !== 0) hasNonZeroValue = true;
+        }
+      });
+      if (!hasAnyValue) break;
+      if (hasNonZeroValue) endCol = colIdx;
+    }
+    return endCol;
+  }
+
+  const ldc = {categories: [], gni: [], hai: [], evi: []};
+  for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
+    const year = numOrNull(rows[rowIdx], 14);
+    const status = textVal(rows[rowIdx], 18);
+    if (year === null || !status) continue;
+    ldc.categories.push(String(Math.round(year)));
+    ldc.gni.push(round1(numOrNull(rows[rowIdx], 15) || 0));
+    ldc.hai.push(round1(numOrNull(rows[rowIdx], 16) || 0));
+    ldc.evi.push(round1(numOrNull(rows[rowIdx], 17) || 0));
+  }
+
+  const riceEndCol = lastFilledCol(12, 2);
 
   const rice = {
-    categories: series(12, 2, 17, 1).map(v => String(Math.round(v))),
-    drySeason: series(13, 2, 17),
-    wetSeason: series(14, 2, 17),
-    upland: series(15, 2, 17),
-    total: series(16, 2, 17),
+    categories: series(12, 2, riceEndCol, 1).map(v => String(Math.round(v))),
+    drySeason: series(13, 2, riceEndCol),
+    wetSeason: series(14, 2, riceEndCol),
+    upland: series(15, 2, riceEndCol),
+    total: series(16, 2, riceEndCol),
   };
 
+  const dropoutEndCol = lastFilledCol(19, 2);
+
   const dropout = {
-    categories: series(19, 2, 14, 1).map(v => String(Math.round(v))),
-    primary: series(20, 2, 14),
-    lowerSecondary: series(21, 2, 14),
-    upperSecondary: series(22, 2, 14),
+    categories: series(19, 2, dropoutEndCol, 1).map(v => String(Math.round(v))),
+    primary: series(20, 2, dropoutEndCol),
+    lowerSecondary: series(21, 2, dropoutEndCol),
+    upperSecondary: series(22, 2, dropoutEndCol),
   };
 
   const malnutrition = {
     categories: ['LSIS I 2012', 'LSIS II 2017', 'LSIS III 2023', 'Target* 2025'],
-    stunting: [44, 33, 32.8, 27],
-    wasting: [6, 9, 10.7, null],
-    underweight: [27, 21, 24.3, 15],
+    stunting: series(25, 2, 5),
+    wasting: series(26, 2, 5),
+    underweight: series(27, 2, 5),
   };
 
-  const jobYears = ['2017', '2018', '2019', '2020', '2021', '2022', '2023'];
+  const domesticEndCol = lastMeaningfulCol([31, 32, 33, 34], 3);
+  const foreignEndCol = lastMeaningfulCol([37, 38, 39, 40], 3);
+  const domesticYears = Array.from({length: Math.max(0, domesticEndCol - 2)}, (_, i) => String(2017 + i));
+  const foreignYears = Array.from({length: Math.max(0, foreignEndCol - 2)}, (_, i) => String(2017 + i));
+
   const domesticJobs = {
-    categories: jobYears,
-    technical: series(31, 3, 9),
-    industrial: series(32, 3, 9),
-    services: series(33, 3, 9),
-    total: series(34, 3, 9),
+    categories: domesticYears,
+    technical: seriesZeroFill(31, 3, domesticEndCol),
+    industrial: seriesZeroFill(32, 3, domesticEndCol),
+    services: seriesZeroFill(33, 3, domesticEndCol),
+    total: seriesZeroFill(34, 3, domesticEndCol),
   };
   const foreignJobs = {
-    categories: jobYears,
-    technical: series(37, 3, 9),
-    industrial: series(38, 3, 9),
-    services: series(39, 3, 9),
-    total: series(40, 3, 9),
+    categories: foreignYears,
+    technical: seriesZeroFill(37, 3, foreignEndCol),
+    industrial: seriesZeroFill(38, 3, foreignEndCol),
+    services: seriesZeroFill(39, 3, foreignEndCol),
+    total: seriesZeroFill(40, 3, foreignEndCol),
   };
 
   return {ldc, rice, dropout, malnutrition, domesticJobs, foreignJobs};
