@@ -199,6 +199,247 @@
     padding-top: 16px;
     border-top: 1px solid var(--border);
   }
+
+  .embed-shell {
+    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.92));
+    border: 1px solid rgba(224, 221, 214, 0.9);
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(17, 24, 39, 0.1);
+    overflow: hidden;
+  }
+  .embed-hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 28px 20px;
+    background:
+      radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 38%),
+      linear-gradient(135deg, #173d64, #295889 56%, #33639a);
+    color: #fff;
+    border-bottom: 4px solid #d46f3d;
+  }
+  .embed-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    font-size: 11px;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .embed-heading {
+    font-family: 'Noto Serif Lao', serif;
+    font-size: 24px;
+    line-height: 1.25;
+    font-weight: 600;
+  }
+  .embed-subheading {
+    margin-top: 8px;
+    max-width: 760px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.82);
+  }
+  .embed-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .embed-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    padding: 0 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.24);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .embed-link:hover {
+    background: rgba(255,255,255,0.16);
+    transform: translateY(-1px);
+  }
+  .carousel-shell {
+    padding: 28px;
+  }
+  .carousel-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .carousel-context {
+    min-width: 0;
+  }
+  .carousel-kicker {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+  .carousel-title {
+    font-family: 'Noto Serif Lao', serif;
+    font-size: 21px;
+    line-height: 1.3;
+    color: var(--text-primary);
+  }
+  .carousel-counter {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .carousel-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .carousel-arrow {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--accent);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 22px rgba(31, 41, 55, 0.08);
+    transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  .carousel-arrow:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: var(--accent);
+  }
+  .carousel-arrow:disabled {
+    opacity: 0.45;
+    cursor: default;
+    transform: none;
+  }
+  .carousel-viewport {
+    overflow: hidden;
+    border-radius: 22px;
+  }
+  .carousel-track {
+    display: flex;
+    will-change: transform;
+    transition: transform 0.35s ease;
+  }
+  .carousel-slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+  .slide-panel {
+    background: linear-gradient(180deg, rgba(248,246,242,0.88), rgba(255,255,255,0.96));
+    border: 1px solid rgba(224,221,214,0.85);
+    border-radius: 22px;
+    padding: 24px;
+    min-height: 100%;
+  }
+  .slide-topbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .slide-topbar .controls-bar {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  .slide-topbar .controls-bar label {
+    white-space: nowrap;
+  }
+  .slide-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 700;
+  }
+  .slide-label::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--accent2);
+  }
+  .slide-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+  .slide-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .slide-stack {
+    display: grid;
+    gap: 24px;
+  }
+  .chart-card--compact {
+    padding: 22px 24px;
+  }
+  .chart-card--compact .card-title {
+    font-size: 15px;
+  }
+  .chart-card--compact .card-subtitle {
+    margin-bottom: 16px;
+  }
+  .chart-card--wide {
+    padding: 24px 28px;
+  }
+  .carousel-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .carousel-dot {
+    width: 10px;
+    height: 10px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(30, 74, 122, 0.18);
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .carousel-dot.active {
+    background: var(--accent);
+    transform: scale(1.18);
+  }
+
+  @media (max-width: 1040px) {
+    .embed-hero,
+    .slide-topbar,
+    .carousel-toolbar { flex-direction: column; align-items: stretch; }
+    .embed-actions { align-self: flex-start; }
+  }
+  @media (max-width: 860px) {
+    .slide-grid-2 { grid-template-columns: 1fr; }
+    .carousel-shell { padding: 18px; }
+    .slide-panel { padding: 18px; }
+    .embed-hero { padding: 20px 18px 18px; }
+    .carousel-title { font-size: 18px; }
+    .embed-heading { font-size: 20px; }
+  }
 </style>
 </head>
 <body>
@@ -208,26 +449,6 @@
   <div class="spinner"></div>
   <div class="loading-text">ກຳລັງໂຫລດຂໍ້ມູນຈາກ Google Sheets…</div>
   <div class="loading-sub" id="loadingDetail">ກຳລັງເຊື່ອມຕໍ່…</div>
-</div>
-
-<header class="site-header">
-  <h1>ລະບົບຂໍ້ມູນການເງິນ-ງົບປະມານ (EFPD Dashboard)</h1>
-  <div class="header-right">
-    <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" title="ໂຫລດຂໍ້ມູນໃໝ່">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/>
-      </svg>
-      ໂຫລດໃໝ່
-    </button>
-    <span class="sub">ກະຊວງການເງິນ · ສປປ ລາວ</span>
-  </div>
-</header>
-
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <div class="status-dot" id="statusDot"></div>
-  <span id="statusText">ກຳລັງເຊື່ອມຕໍ່…</span>
-  <span class="last-updated" id="lastUpdated"></span>
 </div>
 
 <!-- CONFIG BANNER (shown if SHEET_ID not set) -->
@@ -245,122 +466,251 @@
 </div>
 
 <main class="main" id="mainContent" style="display:none;">
+  <div class="embed-shell">
+    <div class="carousel-shell">
+      <div class="carousel-toolbar">
+        <div class="carousel-context">
+          <div class="carousel-kicker">Dashboard Slides</div>
+          <div class="carousel-title" id="carouselTitle">ໂຄງສ້າງລາຍຮັບ ແລະ ລາຍຈ່າຍ</div>
+          <div class="carousel-counter" id="carouselCounter">1 / 9</div>
+        </div>
+        <div class="carousel-nav">
+          <button class="carousel-arrow" id="carouselPrev" type="button" onclick="prevSlide()" aria-label="Previous slide">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          <button class="carousel-arrow" id="carouselNext" type="button" onclick="nextSlide()" aria-label="Next slide">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
 
-  <!-- SECTION 1: Pie Charts -->
-  <p class="section-label">ໂຄງສ້າງລາຍຮັບ ແລະ ລາຍຈ່າຍ</p>
-  <div class="controls-bar">
-    <label>ເລືອກປີ:</label>
-    <select class="year-select" id="pieYear" onchange="updatePieCharts()"></select>
-  </div>
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title" id="revPieTitle">ໂຄງປະກອບລາຍຮັບງົບປະມານ</div>
-      <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ</div>
-      <div id="revPieChart" style="min-height:380px;"></div>
+      <div class="carousel-viewport">
+        <div class="carousel-track" id="carouselTrack">
+          <section class="carousel-slide" data-title="ໂຄງສ້າງລາຍຮັບ ແລະ ລາຍຈ່າຍ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ໂຄງສ້າງລາຍຮັບ ແລະ ລາຍຈ່າຍ</div>
+                <div class="controls-bar">
+                  <label>ເລືອກປີ:</label>
+                  <select class="year-select" id="pieYear" onchange="updatePieCharts()"></select>
+                </div>
+              </div>
+              <div class="slide-grid-2">
+                <div class="card chart-card--compact">
+                  <div class="card-title" id="revPieTitle">ໂຄງປະກອບລາຍຮັບພາຍໃນ</div>
+                  <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ</div>
+                  <div id="revPieChart" style="min-height:380px;"></div>
+                </div>
+                <div class="card chart-card--compact">
+                  <div class="card-title" id="expPieTitle">ໂຄງປະກອບລາຍຈ່າຍງົບປະມານ</div>
+                  <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ</div>
+                  <div id="expPieChart" style="min-height:380px;"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ</div>
+                <div class="controls-bar">
+                  <label>ເລືອກປີ:</label>
+                  <select class="year-select" id="summaryYear" onchange="updateSummaryChart()"></select>
+                </div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title" id="summaryTitle">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ</div>
+                <div class="card-subtitle" id="summarySubtitle">ໜ່ວຍ: % ຂອງ GDP</div>
+                <div id="summaryChart" style="min-height:440px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ</div>
+                <div class="controls-bar">
+                  <label>ເລືອກປີ:</label>
+                  <select class="year-select" id="detailPctYear" onchange="updateDetailPctChart()"></select>
+                </div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title" id="detailPctTitle">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ</div>
+                <div class="card-subtitle" id="detailPctSubtitle">ໜ່ວຍ: ຕື້ກີບ</div>
+                <div id="detailPctChart" style="min-height:440px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="YTD ແລະ ແຜນ ປະຈໍາປີ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ</div>
+                <div class="controls-bar">
+                  <label>ເລືອກປີ:</label>
+                  <select class="year-select" id="ytdYear" onchange="updateYTDChart()"></select>
+                </div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title" id="ytdTitle">ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ</div>
+                <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ · ສາຍສີແດງ = % ທີ່ປະຕິບັດໄດ້ (ແກນຂວາ)</div>
+                <div id="ytdChart" style="min-height:420px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ອັດຕາເງິນເຟີ້">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະເເນກ ສະຖຽນລະພາບເສດຖະກິດ</div>
+                <div class="slide-note">ກຣາຟ 1 / 3</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ອັດຕາເງິນເຟີ້</div>
+                <div class="card-subtitle">ໜ່ວຍ: %, yoy</div>
+                <div id="inflationChart" style="min-height:520px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ດຸນຊຳລະສະພາບຕ່າງປະເທດ (BOP)">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະເເນກ ສະຖຽນລະພາບເສດຖະກິດ</div>
+                <div class="slide-note">ກຣາຟ 2 / 3</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ດຸນຊຳລະສະພາບຕ່າງປະເທດ (BOP)</div>
+                <div class="card-subtitle">ໜ່ວຍ: ລ້ານ ໂດລາ</div>
+                <div id="bopChart" style="min-height:430px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ດຸນບັນຊີຊຳລະປົກກະຕິ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະເເນກ ສະຖຽນລະພາບເສດຖະກິດ</div>
+                <div class="slide-note">ກຣາຟ 3 / 3</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ດຸນບັນຊີຊຳລະປົກກະຕິ</div>
+                <div class="card-subtitle">ໜ່ວຍ: ລ້ານ ໂດລາ</div>
+                <div id="currentAccountChart" style="min-height:430px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ຕົວຊີ້ວັດການຫຼຸດພົ້ນອອກຈາກສະຖານະພາບປະເທດດ້ອຍພັດນາ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
+                <div class="slide-note">ກຣາຟ 1 / 6</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ຕົວຊີ້ວັດການຫຼຸດພົ້ນອອກຈາກສະຖານະພາບປະເທດດ້ອຍພັດນາ</div>
+                <div class="card-subtitle">HAI / EVI / GNI</div>
+                <div id="ldcChart" style="min-height:500px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ຜົນຜະລິດເຂົ້າ (ທົ່ວປະເທດ)">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
+                <div class="slide-note">ກຣາຟ 2 / 6</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ຜົນຜະລິດເຂົ້າ (ທົ່ວປະເທດ)</div>
+                <div class="card-subtitle">ໜ່ວຍ: ໂຕນ</div>
+                <div id="riceChart" style="min-height:500px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ອັດຕາການປະລະການຮຽນ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
+                <div class="slide-note">ກຣາຟ 3 / 6</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ອັດຕາການປະລະການຮຽນໃນແຕ່ລະຊັ້ນຮຽນ(ທົ່ວປະທດ)</div>
+                <div class="card-subtitle">ໜ່ວຍ: %</div>
+                <div id="dropoutChart" style="min-height:460px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ສະພາບໂພຊະນາການຂອງເດັກອາຍຸຕໍ່າກວ່າ 5 ປີ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
+                <div class="slide-note">ກຣາຟ 4 / 6</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ສະພາບໂພຊະນາການຂອງເດັກອາຍຸຕໍ່າກວ່າ 5 ປີ</div>
+                <div class="card-subtitle">LSIS / Target</div>
+                <div id="malnutritionChart" style="min-height:460px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ການຈັດຫາວຽກເຮັດງານທຳພາຍໃນປະເທດ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
+                <div class="slide-note">ກຣາຟ 5 / 6</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ການຈັດຫາວຽກເຮັດງານທຳພາຍໃນປະເທດ</div>
+                <div class="card-subtitle">ໜ່ວຍ: ເທື່ອຄົນ</div>
+                <div id="domesticJobsChart" style="min-height:460px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ການຈັດຫາວຽກເຮັດງານທຳໄປຕ່າງປະເທດ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
+                <div class="slide-note">ກຣາຟ 6 / 6</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ການຈັດຫາວຽກເຮັດງານທຳໄປຕ່າງປະເທດ</div>
+                <div class="card-subtitle">ໜ່ວຍ: ເທື່ອຄົນ</div>
+                <div id="foreignJobsChart" style="min-height:460px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ພະແນກ ຂໜ ເສດຖະກິດ">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="slide-label">ພະແນກ ຂໜ ເສດຖະກິດ</div>
+                <div class="slide-note">ຕາຕະລາງ 6</div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title">ການເຕີບໂຕຂອງເສດຖະກິດ ແລະ ການປະກອບສ່ວນການເຕີບໂຕຂອງຂະເເໜງການ</div>
+                <div class="card-subtitle">ໜ່ວຍ: ຈຸດສ່ວນຮ້ອຍ</div>
+                <div id="growthContributionChart" style="min-height:460px;"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="carousel-dots" id="carouselDots"></div>
+
     </div>
-    <div class="card">
-      <div class="card-title" id="expPieTitle">ໂຄງປະກອບລາຍຈ່າຍງົບປະມານ</div>
-      <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ</div>
-      <div id="expPieChart" style="min-height:380px;"></div>
-    </div>
   </div>
-
-  <!-- SECTION 2: Summary % GDP -->
-  <p class="section-label" style="margin-top:8px;">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ</p>
-  <div class="controls-bar">
-    <label>ເລືອກປີ:</label>
-    <select class="year-select" id="summaryYear" onchange="updateSummaryChart()"></select>
-  </div>
-  <div class="card">
-    <div class="card-title" id="summaryTitle">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ</div>
-    <div class="card-subtitle" id="summarySubtitle">ໜ່ວຍ: % ຂອງ GDP</div>
-    <div id="summaryChart" style="min-height:440px;"></div>
-  </div>
-
-  <!-- SECTION 3: Detail % GDP -->
-  <p class="section-label">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ</p>
-  <div class="controls-bar">
-    <label>ເລືອກປີ:</label>
-    <select class="year-select" id="detailPctYear" onchange="updateDetailPctChart()"></select>
-  </div>
-  <div class="card">
-    <div class="card-title" id="detailPctTitle">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ</div>
-    <div class="card-subtitle" id="detailPctSubtitle">ໜ່ວຍ: % ຂອງ GDP</div>
-    <div id="detailPctChart" style="min-height:460px;"></div>
-  </div>
-
-  <!-- SECTION 5: YTD vs Plan -->
-  <p class="section-label">ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ</p>
-  <div class="controls-bar">
-    <label>ເລືອກປີ:</label>
-    <select class="year-select" id="ytdYear" onchange="updateYTDChart()"></select>
-  </div>
-  <div class="card">
-    <div class="card-title" id="ytdTitle">ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ</div>
-    <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ · ສາຍສີແດງ = % ທີ່ປະຕິບັດໄດ້ (ແກນຂວາ)</div>
-    <div id="ytdChart" style="min-height:420px;"></div>
-  </div>
-
-  <!-- SECTION 6: Stability -->
-  <p class="section-label">ພະເເນກ ສະຖຽນລະພາບເສດຖະກິດ</p>
-  <div class="card">
-    <div class="card-title">ອັດຕາເງິນເຟີ້</div>
-    <div class="card-subtitle">ໜ່ວຍ: %, yoy</div>
-    <div id="inflationChart" style="min-height:520px;"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">ດຸນຊຳລະສະພາບຕ່າງປະເທດ (BOP)</div>
-    <div class="card-subtitle">ໜ່ວຍ: ລ້ານ ໂດລາ</div>
-    <div id="bopChart" style="min-height:460px;"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">ດຸນບັນຊີຊຳລະປົກກະຕິ</div>
-    <div class="card-subtitle">ໜ່ວຍ: ລ້ານ ໂດລາ</div>
-    <div id="currentAccountChart" style="min-height:460px;"></div>
-  </div>
-
-  <!-- SECTION 7: Development -->
-  <p class="section-label">ພະແນກ ພັດທະນາ</p>
-  <div class="card">
-    <div class="card-title">ຕົວຊີ້ວັດການຫຼຸດພົ້ນອອກຈາກສະຖານະພາບປະເທດດ້ອຍພັດນາ</div>
-    <div class="card-subtitle">HAI / EVI / GNI</div>
-    <div id="ldcChart" style="min-height:500px;"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">ຜົນຜະລິດເຂົ້າ (ທົ່ວປະເທດ)</div>
-    <div class="card-subtitle">ໜ່ວຍ: ໂຕນ</div>
-    <div id="riceChart" style="min-height:460px;"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">ອັດຕາການປະລະການຮຽນໃນແຕ່ລະຊັ້ນຮຽນ(ທົ່ວປະທດ)</div>
-    <div class="card-subtitle">ໜ່ວຍ: %</div>
-    <div id="dropoutChart" style="min-height:460px;"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">ສະພາບໂພຊະນາການຂອງເດັກອາຍຸຕໍ່າກວ່າ 5 ປີ</div>
-    <div class="card-subtitle">LSIS / Target</div>
-    <div id="malnutritionChart" style="min-height:460px;"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">ການຈັດຫາວຽກເຮັດງານທໍາ(ທັງພາຍໃນ ແລະ ຕ່າງປະເທດ)</div>
-    <div class="card-subtitle">ໜ່ວຍ: ເທື່ອຄົນ</div>
-    <div id="domesticJobsChart" style="min-height:460px;"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">ການຈັດຫາວຽກເຮັດງານທໍາໄປຕ່າງປະເທດ</div>
-    <div class="card-subtitle">ໜ່ວຍ: ເທື່ອຄົນ</div>
-    <div id="foreignJobsChart" style="min-height:460px;"></div>
-  </div>
-
-  <!-- SECTION 8: Economic Growth Contribution -->
-  <p class="section-label">ພະແນກ ຂໜ ເສດຖະກິດ</p>
-  <div class="card">
-    <div class="card-title">ການເຕີບໂຕຂອງເສດຖະກິດ ແລະ ການປະກອບສ່ວນການເຕີບໂຕຂອງຂະເເໜງການ</div>
-    <div class="card-subtitle">ໜ່ວຍ: ຈຸດສ່ວນຮ້ອຍ</div>
-    <div id="growthContributionChart" style="min-height:460px;"></div>
-  </div>
-
-  <p class="data-note" id="dataNote">ແຫຼ່ງຂໍ້ມູນ: ກະຊວງການເງິນ, ສປປ ລາວ · Google Sheets (Live)</p>
 </main>
 
 <script>
@@ -402,6 +752,7 @@ let DETAIL_PCT    = {};
 let SUMMARY_END_YEARS = [];
 let DETAIL_PCT_END_YEARS = [];
 let YTD_DATA      = {};
+let YTD_TITLE_PREFIX = 'ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ ປະຈໍາປີ';
 let STABILITY_DATA = {
   inflation: null,
   bop: null,
@@ -423,6 +774,8 @@ let revPie, expPie, summaryChart, detailPctChart, ytdChart;
 let inflationChart, bopChart, currentAccountChart;
 let ldcChart, riceChart, dropoutChart, malnutritionChart, domesticJobsChart, foreignJobsChart;
 let growthContributionChart;
+let carouselIndex = 0;
+let carouselReady = false;
 
 // ══════════════════════════════════════════════════════════════════
 //  GOOGLE SHEETS FETCH & PARSE
@@ -620,6 +973,10 @@ function parseChartHelper(table) {
   };
 
   const ytdYears = yearColsAt(46, 2, 2018);
+  const rawYtdTitle = textVal(rows[112], 18) || textVal(rows[112], 17) || textVal(rows[45], 18) || textVal(rows[45], 17);
+  const ytdTitlePrefix = rawYtdTitle
+    ? rawYtdTitle.replace(/\s+\d{4}\s*$/, '').trim()
+    : 'ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ ປະຈໍາປີ';
   const ytdOut = {};
   ytdYears.forEach(({year, colIdx}) => {
     ytdOut[parseInt(year, 10)] = {
@@ -654,6 +1011,7 @@ function parseChartHelper(table) {
     detailPct,
     summaryEndYears,
     detailPctEndYears,
+    ytdTitlePrefix,
     ytdOut,
   };
 }
@@ -1289,6 +1647,7 @@ function escapeHtml(text) {
 function setStatus(state, text) {
   const dot  = document.getElementById('statusDot');
   const span = document.getElementById('statusText');
+  if (!dot || !span) return;
   dot.className  = 'status-dot ' + state;
   span.textContent = text;
 }
@@ -1349,8 +1708,9 @@ async function loadData() {
 
   try {
     setLoading(true, `ກຳລັງດຶງຂໍ້ມູນ chart helper…`);
-    const [yDataTable, chartTable, stabilityTable, developmentTable, economicTable] = await Promise.all([
+    const [yDataTable, ytdDataTable, chartTable, stabilityTable, developmentTable, economicTable] = await Promise.all([
       fetchSheet(SHEETS.yData),
+      fetchSheet(SHEETS.ytdData),
       fetchSheet(SHEETS.chartData),
       fetchSheet(SHEETS.stabilityData),
       fetchSheet(SHEETS.developmentData),
@@ -1371,6 +1731,10 @@ async function loadData() {
     DETAIL_PCT      = chartParsed.detailPct;
     SUMMARY_END_YEARS = chartParsed.summaryEndYears;
     DETAIL_PCT_END_YEARS = chartParsed.detailPctEndYears;
+    const ytdMonths = cellVal(ytdDataTable.rows[0], 3);
+    YTD_TITLE_PREFIX = ytdMonths !== null && ytdMonths !== undefined && ytdMonths !== ''
+      ? `ຂໍ້ມູນການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ ${ytdMonths} ເດືອນຕົ້ນປີ ແລະ ແຜນ ປະຈໍາປີ`
+      : (chartParsed.ytdTitlePrefix || YTD_TITLE_PREFIX);
     YTD_DATA        = chartParsed.ytdOut;
     STABILITY_DATA  = stabilityParsed;
     DEVELOPMENT_DATA = developmentParsed;
@@ -1378,10 +1742,16 @@ async function loadData() {
 
     // Update last-updated timestamp
     const now = new Date();
-    document.getElementById('lastUpdated').textContent =
-      `ອັບເດດ: ${now.toLocaleDateString('lo-LA')} ${now.toLocaleTimeString('lo-LA', {hour:'2-digit', minute:'2-digit'})}`;
-    document.getElementById('dataNote').textContent =
-      `ແຫຼ່ງຂໍ້ມູນ: ກະຊວງການເງິນ, ສປປ ລາວ · Google Sheets (Live) · ອັບເດດ ${now.toLocaleDateString('lo-LA')}`;
+    const lastUpdated = document.getElementById('lastUpdated');
+    if (lastUpdated) {
+      lastUpdated.textContent =
+        `ອັບເດດ: ${now.toLocaleDateString('lo-LA')} ${now.toLocaleTimeString('lo-LA', {hour:'2-digit', minute:'2-digit'})}`;
+    }
+    const dataNote = document.getElementById('dataNote');
+    if (dataNote) {
+      dataNote.textContent =
+        `ແຫຼ່ງຂໍ້ມູນ: ກະຊວງການເງິນ, ສປປ ລາວ · Google Sheets (Live) · ອັບເດດ ${now.toLocaleDateString('lo-LA')}`;
+    }
 
     setStatus('ok', 'ເຊື່ອມຕໍ່ Google Sheets ສຳເລັດ');
     setLoading(false);
@@ -1401,9 +1771,92 @@ async function loadData() {
 
 async function refreshData() {
   const btn = document.getElementById('refreshBtn');
-  btn.classList.add('spinning');
+  if (btn) btn.classList.add('spinning');
   await loadData();
-  btn.classList.remove('spinning');
+  if (btn) btn.classList.remove('spinning');
+}
+
+function getAllCharts() {
+  return [
+    revPie, expPie, summaryChart, detailPctChart, ytdChart,
+    inflationChart, bopChart, currentAccountChart,
+    ldcChart, riceChart, dropoutChart, malnutritionChart,
+    domesticJobsChart, foreignJobsChart, growthContributionChart,
+  ].filter(Boolean);
+}
+
+function initCarousel() {
+  const track = document.getElementById('carouselTrack');
+  const dots = document.getElementById('carouselDots');
+  if (!track || !dots) return;
+
+  const slides = Array.from(track.querySelectorAll('.carousel-slide'));
+  if (!slides.length) return;
+
+  if (!carouselReady) {
+    dots.innerHTML = slides.map((_, idx) =>
+      `<button class="carousel-dot${idx === 0 ? ' active' : ''}" type="button" aria-label="Slide ${idx + 1}" onclick="goToSlide(${idx})"></button>`
+    ).join('');
+
+    window.addEventListener('resize', () => {
+      if (!carouselReady) return;
+      requestAnimationFrame(() => reflowVisibleCharts());
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (!document.getElementById('mainContent') || document.getElementById('mainContent').style.display === 'none') return;
+      if (event.key === 'ArrowLeft') prevSlide();
+      if (event.key === 'ArrowRight') nextSlide();
+    });
+
+    carouselReady = true;
+  }
+
+  goToSlide(Math.min(carouselIndex, slides.length - 1), true);
+}
+
+function goToSlide(index, immediate = false) {
+  const track = document.getElementById('carouselTrack');
+  const slides = track ? Array.from(track.querySelectorAll('.carousel-slide')) : [];
+  if (!track || !slides.length) return;
+
+  carouselIndex = Math.max(0, Math.min(index, slides.length - 1));
+  if (immediate) track.style.transition = 'none';
+  track.style.transform = `translateX(-${carouselIndex * 100}%)`;
+  if (immediate) {
+    track.offsetHeight;
+    track.style.transition = '';
+  }
+
+  document.getElementById('carouselPrev').disabled = carouselIndex === 0;
+  document.getElementById('carouselNext').disabled = carouselIndex === slides.length - 1;
+
+  const currentSlide = slides[carouselIndex];
+  const title = currentSlide?.dataset.title || 'Dashboard';
+  document.getElementById('carouselTitle').textContent = title;
+  document.getElementById('carouselCounter').textContent = `${carouselIndex + 1} / ${slides.length}`;
+
+  Array.from(document.querySelectorAll('.carousel-dot')).forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === carouselIndex);
+  });
+
+  setTimeout(() => reflowVisibleCharts(), immediate ? 0 : 220);
+}
+
+function prevSlide() { goToSlide(carouselIndex - 1); }
+function nextSlide() { goToSlide(carouselIndex + 1); }
+
+function reflowVisibleCharts() {
+  const track = document.getElementById('carouselTrack');
+  const slides = track ? Array.from(track.querySelectorAll('.carousel-slide')) : [];
+  const activeSlide = slides[carouselIndex];
+  if (!activeSlide) return;
+
+  getAllCharts().forEach((chart) => {
+    const container = chart?.renderTo;
+    if (!container) return;
+    if (activeSlide.contains(container)) chart.reflow();
+  });
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1467,7 +1920,7 @@ function makePie(container, data) {
 function updatePieCharts() {
   const yr = parseInt(document.getElementById('pieYear').value);
   if (!revPie || !expPie || !REVENUE_PIE[yr] || !EXPENDITURE_PIE[yr]) return;
-  document.getElementById('revPieTitle').textContent = `ໂຄງປະກອບລາຍຮັບງົບປະມານ ປີ ${yr}`;
+  document.getElementById('revPieTitle').textContent = `ໂຄງປະກອບລາຍຮັບພາຍໃນ ປີ ${yr}`;
   document.getElementById('expPieTitle').textContent = `ໂຄງປະກອບລາຍຈ່າຍງົບປະມານ ປີ ${yr}`;
   revPie.series[0].setData(REVENUE_PIE[yr].map(point => ({...point})), true, {duration:300});
   expPie.series[0].setData(EXPENDITURE_PIE[yr].map(point => ({...point})), true, {duration:300});
@@ -1633,12 +2086,12 @@ function buildDetailAbsChart() {
 function buildDetailPctChart(endYear) {
   const win = pickWindow(DETAIL_PCT, endYear, 6);
   if (!win) return;
-  document.getElementById('detailPctSubtitle').textContent = `ໜ່ວຍ: % ຂອງ GDP · ປີ ${win.years[0]}–${win.years[win.years.length - 1]}`;
+  document.getElementById('detailPctSubtitle').textContent = `ໜ່ວຍ: ຕື້ກີບ · ປີ ${win.years[0]}–${win.years[win.years.length - 1]}`;
   return Highcharts.chart('detailPctChart', {
     chart: {height:460},
     xAxis: {categories: win.years, labels:{style:{fontSize:'12px'}}, crosshair:true},
     yAxis: {
-      title: {text:'(% ຂອງ GDP)', style:{fontSize:'12px'}},
+      title: {text:'ຕື້ກີບ', style:{fontSize:'12px'}},
       labels: {format:'{value}'},
       gridLineColor: '#e0ddd6',
       plotLines: [{value:0, color:'#c8c8c8', width:1, zIndex:3}],
@@ -2014,9 +2467,9 @@ function buildRiceChart() {
     },
     legend: {layout:'horizontal', align:'center', verticalAlign:'bottom'},
     series: [
-      {name:'ການປູກເຂົ້ານາໃນລະດູແລ້ງ', type:'area', data:d.drySeason, color:'#ed7d31'},
-      {name:'ການປູກເຂົ້ານາແຊງ', type:'area', data:d.wetSeason, color:'#4472c4'},
-      {name:'ການປູກເຂົ້າໄຮ່', type:'area', data:d.upland, color:'#a5a5a5'},
+      {name:'ເຂົ້າເປືອກນາປີ', type:'area', data:d.drySeason, color:'#ed7d31'},
+      {name:'ເຂົ້າເປຶອກນາເເຊງ', type:'area', data:d.wetSeason, color:'#4472c4'},
+      {name:'ເຂົ້າເປືອກເນີນສູງ', type:'area', data:d.upland, color:'#a5a5a5'},
     ],
   });
 }
@@ -2176,7 +2629,7 @@ function buildGrowthContributionChart() {
 function updateYTDChart() {
   const yr = parseInt(document.getElementById('ytdYear').value);
   document.getElementById('ytdTitle').textContent =
-    `ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ ປະຈໍາປີ ${yr}`;
+    `${YTD_TITLE_PREFIX} ${yr}`;
   if (ytdChart) ytdChart.destroy();
   ytdChart = buildYTDChart(yr);
 }
@@ -2190,7 +2643,7 @@ function renderAllCharts() {
   if (pieYears.length) {
     const defaultPie = pieYears[pieYears.length - 1];
     populateSelect('pieYear', pieYears, defaultPie);
-    document.getElementById('revPieTitle').textContent = `ໂຄງປະກອບລາຍຮັບງົບປະມານ ປີ ${defaultPie}`;
+    document.getElementById('revPieTitle').textContent = `ໂຄງປະກອບລາຍຮັບພາຍໃນ ປີ ${defaultPie}`;
     document.getElementById('expPieTitle').textContent = `ໂຄງປະກອບລາຍຈ່າຍງົບປະມານ ປີ ${defaultPie}`;
     if (revPie) revPie.destroy();
     if (expPie) expPie.destroy();
@@ -2220,7 +2673,7 @@ function renderAllCharts() {
     const defaultYtd = ytdYears[ytdYears.length - 1];
     populateSelect('ytdYear', ytdYears, defaultYtd);
     document.getElementById('ytdTitle').textContent =
-      `ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ ປະຈໍາປີ ${defaultYtd}`;
+      `${YTD_TITLE_PREFIX} ${defaultYtd}`;
     if (ytdChart) ytdChart.destroy();
     ytdChart = buildYTDChart(defaultYtd);
   }
@@ -2254,6 +2707,9 @@ function renderAllCharts() {
 
   if (growthContributionChart) growthContributionChart.destroy();
   growthContributionChart = buildGrowthContributionChart();
+
+  initCarousel();
+  reflowVisibleCharts();
 }
 
 // ══════════════════════════════════════════════════════════════════
