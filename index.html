@@ -470,9 +470,7 @@
     <div class="carousel-shell">
       <div class="carousel-toolbar">
         <div class="carousel-context">
-          <div class="carousel-kicker">Dashboard Slides</div>
-          <div class="carousel-title" id="carouselTitle">ໂຄງສ້າງລາຍຮັບ ແລະ ລາຍຈ່າຍ</div>
-          <div class="carousel-counter" id="carouselCounter">1 / 9</div>
+          <div class="carousel-counter" id="carouselCounter">1 / 14</div>
         </div>
         <div class="carousel-nav">
           <button class="carousel-arrow" id="carouselPrev" type="button" onclick="prevSlide()" aria-label="Previous slide">
@@ -490,10 +488,35 @@
 
       <div class="carousel-viewport">
         <div class="carousel-track" id="carouselTrack">
+          <section class="carousel-slide" data-title="ການເຕີບໂຕຂອງເສດຖະກິດ ແລະ ການປະກອບສ່ວນການເຕີບໂຕຂອງຂະເເໜງການ">
+            <div class="slide-panel">
+              <div class="card chart-card--wide">
+                <div class="card-title">ການເຕີບໂຕຂອງເສດຖະກິດ ແລະ ການປະກອບສ່ວນການເຕີບໂຕຂອງຂະເເໜງການ</div>
+                <div class="card-subtitle">ໜ່ວຍ: ຈຸດສ່ວນຮ້ອຍ</div>
+                <div id="growthContributionChart" style="min-height:460px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="carousel-slide" data-title="ຂໍ້ມູນການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 3 ເດືອນຕົ້ນປີ ແລະ ແຜນ ປະຈໍາປີ 2026">
+            <div class="slide-panel">
+              <div class="slide-topbar">
+                <div class="controls-bar">
+                  <label>ເລືອກປີ:</label>
+                  <select class="year-select" id="ytdYear" onchange="updateYTDChart()"></select>
+                </div>
+              </div>
+              <div class="card chart-card--wide">
+                <div class="card-title" id="ytdTitle">ຂໍ້ມູນການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 3 ເດືອນຕົ້ນປີ ແລະ ແຜນ ປະຈໍາປີ 2026</div>
+                <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ</div>
+                <div id="ytdChart" style="min-height:420px;"></div>
+              </div>
+            </div>
+          </section>
+
           <section class="carousel-slide" data-title="ໂຄງສ້າງລາຍຮັບ ແລະ ລາຍຈ່າຍ">
             <div class="slide-panel">
               <div class="slide-topbar">
-                <div class="slide-label">ໂຄງສ້າງລາຍຮັບ ແລະ ລາຍຈ່າຍ</div>
                 <div class="controls-bar">
                   <label>ເລືອກປີ:</label>
                   <select class="year-select" id="pieYear" onchange="updatePieCharts()"></select>
@@ -517,7 +540,6 @@
           <section class="carousel-slide" data-title="ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ">
             <div class="slide-panel">
               <div class="slide-topbar">
-                <div class="slide-label">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ</div>
                 <div class="controls-bar">
                   <label>ເລືອກປີ:</label>
                   <select class="year-select" id="summaryYear" onchange="updateSummaryChart()"></select>
@@ -534,7 +556,6 @@
           <section class="carousel-slide" data-title="ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ">
             <div class="slide-panel">
               <div class="slide-topbar">
-                <div class="slide-label">ການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານເເຫ່ງລັດ</div>
                 <div class="controls-bar">
                   <label>ເລືອກປີ:</label>
                   <select class="year-select" id="detailPctYear" onchange="updateDetailPctChart()"></select>
@@ -547,30 +568,8 @@
               </div>
             </div>
           </section>
-
-          <section class="carousel-slide" data-title="YTD ແລະ ແຜນ ປະຈໍາປີ">
-            <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ</div>
-                <div class="controls-bar">
-                  <label>ເລືອກປີ:</label>
-                  <select class="year-select" id="ytdYear" onchange="updateYTDChart()"></select>
-                </div>
-              </div>
-              <div class="card chart-card--wide">
-                <div class="card-title" id="ytdTitle">ສັງລວມການຈັດຕັ້ງປະຕິບັດແຜນງົບປະມານ 9 ເດືອນຕົ້ນປີ ແລະ ແຜນ</div>
-                <div class="card-subtitle">ໜ່ວຍ: ຕື້ກີບ · ສາຍສີແດງ = % ທີ່ປະຕິບັດໄດ້ (ແກນຂວາ)</div>
-                <div id="ytdChart" style="min-height:420px;"></div>
-              </div>
-            </div>
-          </section>
-
           <section class="carousel-slide" data-title="ອັດຕາເງິນເຟີ້">
             <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະເເນກ ສະຖຽນລະພາບເສດຖະກິດ</div>
-                <div class="slide-note">ກຣາຟ 1 / 3</div>
-              </div>
               <div class="card chart-card--wide">
                 <div class="card-title">ອັດຕາເງິນເຟີ້</div>
                 <div class="card-subtitle">ໜ່ວຍ: %, yoy</div>
@@ -581,10 +580,6 @@
 
           <section class="carousel-slide" data-title="ດຸນຊຳລະສະພາບຕ່າງປະເທດ (BOP)">
             <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະເເນກ ສະຖຽນລະພາບເສດຖະກິດ</div>
-                <div class="slide-note">ກຣາຟ 2 / 3</div>
-              </div>
               <div class="card chart-card--wide">
                 <div class="card-title">ດຸນຊຳລະສະພາບຕ່າງປະເທດ (BOP)</div>
                 <div class="card-subtitle">ໜ່ວຍ: ລ້ານ ໂດລາ</div>
@@ -595,10 +590,6 @@
 
           <section class="carousel-slide" data-title="ດຸນບັນຊີຊຳລະປົກກະຕິ">
             <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະເເນກ ສະຖຽນລະພາບເສດຖະກິດ</div>
-                <div class="slide-note">ກຣາຟ 3 / 3</div>
-              </div>
               <div class="card chart-card--wide">
                 <div class="card-title">ດຸນບັນຊີຊຳລະປົກກະຕິ</div>
                 <div class="card-subtitle">ໜ່ວຍ: ລ້ານ ໂດລາ</div>
@@ -609,10 +600,6 @@
 
           <section class="carousel-slide" data-title="ຕົວຊີ້ວັດການຫຼຸດພົ້ນອອກຈາກສະຖານະພາບປະເທດດ້ອຍພັດນາ">
             <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
-                <div class="slide-note">ກຣາຟ 1 / 6</div>
-              </div>
               <div class="card chart-card--wide">
                 <div class="card-title">ຕົວຊີ້ວັດການຫຼຸດພົ້ນອອກຈາກສະຖານະພາບປະເທດດ້ອຍພັດນາ</div>
                 <div class="card-subtitle">HAI / EVI / GNI</div>
@@ -623,10 +610,6 @@
 
           <section class="carousel-slide" data-title="ຜົນຜະລິດເຂົ້າ (ທົ່ວປະເທດ)">
             <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
-                <div class="slide-note">ກຣາຟ 2 / 6</div>
-              </div>
               <div class="card chart-card--wide">
                 <div class="card-title">ຜົນຜະລິດເຂົ້າ (ທົ່ວປະເທດ)</div>
                 <div class="card-subtitle">ໜ່ວຍ: ໂຕນ</div>
@@ -637,10 +620,6 @@
 
           <section class="carousel-slide" data-title="ອັດຕາການປະລະການຮຽນ">
             <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
-                <div class="slide-note">ກຣາຟ 3 / 6</div>
-              </div>
               <div class="card chart-card--wide">
                 <div class="card-title">ອັດຕາການປະລະການຮຽນໃນແຕ່ລະຊັ້ນຮຽນ(ທົ່ວປະທດ)</div>
                 <div class="card-subtitle">ໜ່ວຍ: %</div>
@@ -651,10 +630,6 @@
 
           <section class="carousel-slide" data-title="ສະພາບໂພຊະນາການຂອງເດັກອາຍຸຕໍ່າກວ່າ 5 ປີ">
             <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
-                <div class="slide-note">ກຣາຟ 4 / 6</div>
-              </div>
               <div class="card chart-card--wide">
                 <div class="card-title">ສະພາບໂພຊະນາການຂອງເດັກອາຍຸຕໍ່າກວ່າ 5 ປີ</div>
                 <div class="card-subtitle">LSIS / Target</div>
@@ -665,10 +640,6 @@
 
           <section class="carousel-slide" data-title="ການຈັດຫາວຽກເຮັດງານທຳພາຍໃນປະເທດ">
             <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
-                <div class="slide-note">ກຣາຟ 5 / 6</div>
-              </div>
               <div class="card chart-card--wide">
                 <div class="card-title">ການຈັດຫາວຽກເຮັດງານທຳພາຍໃນປະເທດ</div>
                 <div class="card-subtitle">ໜ່ວຍ: ເທື່ອຄົນ</div>
@@ -679,28 +650,10 @@
 
           <section class="carousel-slide" data-title="ການຈັດຫາວຽກເຮັດງານທຳໄປຕ່າງປະເທດ">
             <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະແນກ ພັດທະນາ</div>
-                <div class="slide-note">ກຣາຟ 6 / 6</div>
-              </div>
               <div class="card chart-card--wide">
                 <div class="card-title">ການຈັດຫາວຽກເຮັດງານທຳໄປຕ່າງປະເທດ</div>
                 <div class="card-subtitle">ໜ່ວຍ: ເທື່ອຄົນ</div>
                 <div id="foreignJobsChart" style="min-height:460px;"></div>
-              </div>
-            </div>
-          </section>
-
-          <section class="carousel-slide" data-title="ພະແນກ ຂໜ ເສດຖະກິດ">
-            <div class="slide-panel">
-              <div class="slide-topbar">
-                <div class="slide-label">ພະແນກ ຂໜ ເສດຖະກິດ</div>
-                <div class="slide-note">ຕາຕະລາງ 6</div>
-              </div>
-              <div class="card chart-card--wide">
-                <div class="card-title">ການເຕີບໂຕຂອງເສດຖະກິດ ແລະ ການປະກອບສ່ວນການເຕີບໂຕຂອງຂະເເໜງການ</div>
-                <div class="card-subtitle">ໜ່ວຍ: ຈຸດສ່ວນຮ້ອຍ</div>
-                <div id="growthContributionChart" style="min-height:460px;"></div>
               </div>
             </div>
           </section>
@@ -1833,7 +1786,6 @@ function goToSlide(index, immediate = false) {
 
   const currentSlide = slides[carouselIndex];
   const title = currentSlide?.dataset.title || 'Dashboard';
-  document.getElementById('carouselTitle').textContent = title;
   document.getElementById('carouselCounter').textContent = `${carouselIndex + 1} / ${slides.length}`;
 
   Array.from(document.querySelectorAll('.carousel-dot')).forEach((dot, idx) => {
@@ -2700,10 +2652,10 @@ function renderAllCharts() {
   malnutritionChart = buildMalnutritionChart();
 
   if (domesticJobsChart) domesticJobsChart.destroy();
-  domesticJobsChart = buildJobsChart('domesticJobsChart', DEVELOPMENT_DATA.domesticJobs, 'ການຈັດຫາວຽກເຮັດງານທຳພາຍໃນປະເທດ');
+  domesticJobsChart = buildJobsChart('domesticJobsChart', DEVELOPMENT_DATA.domesticJobs, '');
 
   if (foreignJobsChart) foreignJobsChart.destroy();
-  foreignJobsChart = buildJobsChart('foreignJobsChart', DEVELOPMENT_DATA.foreignJobs, 'ການຈັດຫາວຽກເຮັດງານທຳໄປຕ່າງປະເທດ');
+  foreignJobsChart = buildJobsChart('foreignJobsChart', DEVELOPMENT_DATA.foreignJobs, '');
 
   if (growthContributionChart) growthContributionChart.destroy();
   growthContributionChart = buildGrowthContributionChart();
